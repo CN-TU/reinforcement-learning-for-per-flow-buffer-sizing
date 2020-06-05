@@ -350,10 +350,9 @@ def print_config(env, phase='configure'):
 
 def configure(conf):
     # XXX: Max added this:
-    frontpath = "/home/max/repos/"
-    if not "hyperion" in socket.gethostname() and not "gpu" in socket.gethostname():
-        frontpath = "/generic/"
-    conf.env.append_value('INCLUDES', [""+frontpath+"libtorch/include", ""+frontpath+"libtorch/include/torch/csrc/api/include"])
+    frontpath = subprocess.check_output("git rev-parse --show-toplevel".split()).decode().replace("\n", "")+"/"
+    # print("frontpath", frontpath)
+    conf.env.append_value('INCLUDES', [frontpath+"libtorch/include", frontpath+"libtorch/include/torch/csrc/api/include"])
     conf.env.append_value('LINKFLAGS', ["-L"+frontpath+"libtorch/lib", "-ltorch", "-ltorch_cpu", "-lc10"])
     conf.env.append_value('CXXFLAGS', '-D_GLIBCXX_USE_CXX11_ABI=0')
 
