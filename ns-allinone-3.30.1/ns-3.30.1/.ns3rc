@@ -1,0 +1,16 @@
+#! /usr/bin/env python
+
+# A list of the modules that will be enabled when ns-3 is run.
+# Modules that depend on the listed modules will be enabled also.
+#
+# All modules can be enabled by choosing 'all_modules'.
+modules_enabled = ['all_modules']
+# modules_enabled = ['core', 'network', 'internet', 'traffic-control', 'point-to-point', "point-to-point-layout", "applications", "topology-read"]
+# modules_enabled = ["antenna", "csma", "lte", "point-to-point-layout", "virtual-net-device", "aodv", "csma-layout", "mesh", "propagation", "visualizer", "applications", "dsdv", "mobility", "sixlowpan", "wave", "bridge", "dsr", "mpi", "spectrum", "wifi", "brite", "energy", "netanim", "stats", "wimax", "buildings", "fd-net-device", "network", "tap-bridge", "wscript", "click", "flow-monitor", "nix-vector-routing", "test", "config-store", "internet", "olsr", "topology-read", "core", "internet-apps", "openflow", "traffic-control", "create-module.py", "lr-wpan", "point-to-point", "uan"]
+# modules_enabled = ["point-to-point-layout", "virtual-net-device", "visualizer", "applications", "bridge", "dsr", "mpi", "spectrum", "netanim", "stats", "network", "flow-monitor", "nix-vector-routing", "test", "config-store", "internet", "topology-read", "core", "internet-apps", "traffic-control", "point-to-point"]
+
+# Set this equal to true if you want examples to be run.
+examples_enabled = False
+
+# Set this equal to true if you want tests to be run.
+tests_enabled = False
