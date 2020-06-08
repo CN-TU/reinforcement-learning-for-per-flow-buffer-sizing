@@ -13,6 +13,12 @@ args = sys.argv[1:]
 # LAST_N = 100_000
 LAST_N = 1_000_000_000
 
+def windowize(data, n=400):
+	new_data = []
+	for i in range(int(math.floor(len(data)/n))):
+		new_data.append(data[i*n:(i+1)*n])
+	return [statistics.mean(item) for item in new_data]
+
 for arg in args:
 	print("Yeah, plotting")
 
@@ -24,12 +30,6 @@ for arg in args:
 	extracted_data = {}
 	for col in df:
 		extracted_data[col] = df[col].tolist()
-
-	def windowize(data, n=400):
-		new_data = []
-		for i in range(int(math.floor(len(data)/n))):
-			new_data.append(data[i*n:(i+1)*n])
-		return [statistics.mean(item) for item in new_data]
 
 	for col in extracted_data.keys():
 		data = np.array(extracted_data[col])[-LAST_N:]

@@ -1,22 +1,198 @@
-@article{floyd1993random,
-  title={Random early detection gateways for congestion avoidance},
-  author={Floyd, Sally and Jacobson, Van},
-  journal={IEEE/ACM Transactions on Networking (ToN)},
-  volume={1},
-  number={4},
-  pages={397--413},
-  year={1993},
-  publisher={IEEE Press}
+
+@misc{taht_flow_2018,
+	title = {The {Flow} {Queue} {CoDel} {Packet} {Scheduler} and {Active} {Queue} {Management} {Algorithm}},
+	url = {https://tools.ietf.org/html/rfc8290},
+	language = {en},
+	urldate = {2019-10-11},
+	author = {Taht, D. and Gettys, Jim and Hoeiland-Joergensen, T. and Hoeiland-Joergensen, Toke and Dumazet, Eric and Gettys, J. and Dumazet, E. and McKenney, P.},
+	year = {2018},
+	file = {Snapshot:/home/max/.zotero/zotero/zzt443zn.default/zotero/storage/FNJA66W6/rfc8290.html:text/html}
 }
 
-@article{stoica2001chord,
-  title={Chord: A scalable peer-to-peer lookup service for internet applications},
-  author={Stoica, Ion and Morris, Robert and Karger, David and Kaashoek, M Frans and Balakrishnan, Hari},
-  journal={ACM SIGCOMM Computer Communication Review},
-  volume={31},
-  number={4},
-  pages={149--160},
-  year={2001},
-  publisher={ACM}
+@article{nichols_controlling_2012,
+	title = {Controlling {Queue} {Delay}},
+	volume = {10},
+	issn = {1542-7730},
+	abstract = {A modern AQM is just one piece of the solution to bufferbloat.},
+	number = {5},
+	urldate = {2019-10-11},
+	journal = {Queue},
+	author = {Nichols, Kathleen and Jacobson, Van},
+	month = may,
+	year = {2012},
+	pages = {20:20--20:34},
+	file = {ACM Full Text PDF:/home/max/.zotero/zotero/zzt443zn.default/zotero/storage/2FVMF4WS/Nichols and Jacobson - 2012 - Controlling Queue Delay.pdf:application/pdf}
 }
 
+@article{cardwell_bbr:_2016,
+	title = {{BBR}: {Congestion}-{Based} {Congestion} {Control}},
+	volume = {14, September-October},
+	shorttitle = {{BBR}},
+	urldate = {2019-10-11},
+	journal = {ACM Queue},
+	author = {Cardwell, Neal and Cheng, Yuchung and Gunn, C. Stephen and Yeganeh, Soheil Hassas and Jacobson, Van},
+	year = {2016},
+	pages = {20 -- 53}
+}
+
+@article{ha_cubic:_2008,
+	title = {{CUBIC}: a new {TCP}-friendly high-speed {TCP} variant},
+	volume = {42},
+	issn = {01635980},
+	shorttitle = {{CUBIC}},
+	abstract = {CUBIC is a congestion control protocol for TCP (transmission control protocol) and the current default TCP algorithm in Linux. The protocol modiﬁes the linear window growth function of existing TCP standards to be a cubic function in order to improve the scalability of TCP over fast and long distance networks. It also achieves more equitable bandwidth allocations among ﬂows with diﬀerent RTTs (round trip times) by making the window growth to be independent of RTT – thus those ﬂows grow their congestion window at the same rate. During steady state, CUBIC increases the window size aggressively when the window is far from the saturation point, and the slowly when it is close to the saturation point. This feature allows CUBIC to be very scalable when the bandwidth and delay product of the network is large, and at the same time, be highly stable and also fair to standard TCP ﬂows. The implementation of CUBIC in Linux has gone through several upgrades. This paper documents its design, implementation, performance and evolution as the default TCP algorithm of Linux.},
+	language = {en},
+	number = {5},
+	urldate = {2019-10-11},
+	journal = {ACM SIGOPS Operating Systems Review},
+	author = {Ha, Sangtae and Rhee, Injong and Xu, Lisong},
+	month = jul,
+	year = {2008},
+	pages = {64--74},
+	file = {Ha et al. - 2008 - CUBIC a new TCP-friendly high-speed TCP variant.pdf:/home/max/.zotero/zotero/zzt443zn.default/zotero/storage/KZ4Z69S2/Ha et al. - 2008 - CUBIC a new TCP-friendly high-speed TCP variant.pdf:application/pdf}
+}
+
+@misc{dumazet_pkt_sched:_2013,
+	title = {pkt\_sched: fq: {Fair} {Queue} packet scheduler [{LWN}.net]},
+	url = {https://lwn.net/Articles/565421/},
+	urldate = {2019-10-11},
+	author = {Dumazet, Eric},
+	year = {2013},
+	file = {pkt_sched\: fq\: Fair Queue packet scheduler [LWN.net]:/home/max/.zotero/zotero/zzt443zn.default/zotero/storage/GM39QQTK/565421.html:text/html}
+}
+
+@misc{kuhlewind_quic_2018,
+	title = {The {QUIC} {Latency} {Spin} {Bit}},
+	url = {https://tools.ietf.org/html/draft-ietf-quic-spin-exp-01},
+	language = {en},
+	urldate = {2019-10-11},
+	author = {Kühlewind, Mirja and Trammell, Brian},
+	year = {2018},
+	file = {Snapshot:/home/max/.zotero/zotero/zzt443zn.default/zotero/storage/YN93XHX3/draft-ietf-quic-spin-exp-01.html:text/html}
+}
+
+@misc{borman_tcp_2014,
+	title = {{TCP} {Extensions} for {High} {Performance}},
+	url = {https://tools.ietf.org/html/rfc7323},
+	language = {en},
+	urldate = {2019-10-11},
+	author = {Borman, David and Scheffenegger, Richard and Jacobson, Van},
+	year = {2014},
+	file = {Snapshot:/home/max/.zotero/zotero/zzt443zn.default/zotero/storage/VGHJAN2F/rfc7323.html:text/html}
+}
+
+@inproceedings{bless_policy-oriented_2018,
+	title = {Policy-oriented {AQM} {Steering}},
+	abstract = {Detecting and handling network congestion in the Internet has, again, become a vital area of research. The provisioning of low latency together with high throughput is of particular interest due to the current mix of applications running in the Internet. Active Queue Management (AQM) mechanisms come with the promise of reducing queuing delays. They, however, may adversely affect throughput and network utilization and have proven to be difficult to configure. More recent AQMs, such as CoDel, PIE, and GSP are easier to configure but work with a fixed target delay setpoint. Depending on the traffic the same setpoint value can result either in unnecessary large delays or under-utilization of the link. Policy-oriented AQM Steering automatically adapts the target delay setpoint to the current traffic situation, in order to fulfill a given quality-of-service policy. Such a policy consists of a utilization goal and an upper delay bound. This improves AQM performance with varying traffic situations and makes the impact of deploying an AQM predictable. A prototypical implementation of AQM Steering for GSP showed its performance advantages compared to static AQM variants at speeds of 10 Gbit/s and 1 Gbit/s.},
+	booktitle = {2018 {IFIP} {Networking} {Conference} ({IFIP} {Networking}) and {Workshops}},
+	author = {Bless, Roland and Hock, Mario and Zitterbart, Martina},
+	month = may,
+	year = {2018},
+	keywords = {Throughput, Bandwidth, Delays, Internet, network congestion, Active Queue Management mechanisms, CoDel, fixed target delay setpoint, GSP, network utilization, Packet loss, PIE, policy-oriented AQM Steering, quality of service, quality-of-service policy, queueing theory, queuing delays, static AQM variants, synchronisation, telecommunication network management, traffic situation, Upper bound},
+	pages = {1--9},
+	file = {IEEE Xplore Abstract Record:/home/max/.zotero/zotero/zzt443zn.default/zotero/storage/RLFMJX3W/8696627.html:text/html;IEEE Xplore Full Text PDF:/home/max/.zotero/zotero/zzt443zn.default/zotero/storage/3VSPBH8H/Bless et al. - 2018 - Policy-oriented AQM Steering.pdf:application/pdf}
+}
+
+@phdthesis{kim_deep_2019,
+	type = {{PhD} {Thesis}},
+	title = {Deep {Reinforcement} {Learning} based {Active} {Queue} {Management} for {IoT} {Networks}},
+	author = {Kim, Minsu},
+	year = {2019},
+	doi = {10.13140/RG.2.2.24361.65126}
+}
+
+@article{bisoy_aqm_2018,
+	title = {An {AQM} {Controller} {Based} on {Feed}-{Forward} {Neural} {Networks} for {Stable} {Internet}},
+	volume = {43},
+	issn = {2193-567X, 2191-4281},
+	url = {http://link.springer.com/10.1007/s13369-017-2767-9},
+	doi = {10.1007/s13369-017-2767-9},
+	abstract = {As the nature of Internet becomes nonlinear and complex, designing an intelligent controller at the router which can learn the trafﬁc pattern of the network and predict the correct value and stabilize the system is a difﬁcult task. In this, a new active queue management (AQM) controller is proposed based on feed-forward neural network called (FFNN-AQM) to control the network congestion efﬁciently by stabilizing the queue length. It learns the trafﬁc pattern of the nonlinear and dynamic network and predicts the future value of current queue length. The parameters of neurons adjusted depending on the time-varying environment to stabilize the queue length. The NS2 network simulator is used to analyze the performance of FFNN-AQM along with existing techniques. The simulation experiment results demonstrate that FFNN-AQM is stable and achieve faster convergence with small settling time in varying network conditions. The proposed controller outperforms existing AQM proportional integral (PI), intelligent adaptive PI and neural network PI techniques.},
+	language = {en},
+	number = {8},
+	urldate = {2020-02-14},
+	journal = {Arabian Journal for Science and Engineering},
+	author = {Bisoy, Sukant Kishoro and Pattnaik, Prasant Kumar},
+	month = aug,
+	year = {2018},
+	pages = {3993--4004},
+	file = {Bisoy and Pattnaik - 2018 - An AQM Controller Based on Feed-Forward Neural Net.pdf:/home/max/.zotero/zotero/zzt443zn.default/zotero/storage/8DEBKQFM/Bisoy and Pattnaik - 2018 - An AQM Controller Based on Feed-Forward Neural Net.pdf:application/pdf}
+}
+
+@inproceedings{bachl_cocoa_2019,
+	address = {Palo Alto, CA, USA},
+	series = {{BS} '19},
+	title = {Cocoa: {Congestion} {Control} {Aware} {Queuing}},
+	isbn = {978-1-4503-7745-4},
+	shorttitle = {Cocoa},
+	url = {https://doi.org/10.1145/3375235.3375236},
+	doi = {10.1145/3375235.3375236},
+	abstract = {Recent model-based congestion control algorithms such as BBR use repeated measurements at the endpoint to build a model of the network connection and use it to achieve optimal throughput with low queuing delay. Conversely, applying this model-based approach to Active Queue Management (AQM) has so far received less attention. We propose the new AQM scheduler cocoa based on fair queuing, which adapts the buffer size depending on the needs of each flow without requiring active participation from the endpoint. We implement this scheduler for the Linux kernel and show that it interacts well with the most common congestion control algorithms and can significantly increase throughput compared to fair CoDel while avoiding overbuffering.},
+	urldate = {2020-06-05},
+	booktitle = {Proceedings of the 2019 {Workshop} on {Buffer} {Sizing}},
+	publisher = {Association for Computing Machinery},
+	author = {Bachl, Maximilian and Fabini, Joachim and Zseby, Tanja},
+	month = dec,
+	year = {2019},
+	pages = {1--7},
+	file = {Full Text PDF:/home/max/.zotero/zotero/zzt443zn.default/zotero/storage/I3EDPF9V/Bachl et al. - 2019 - Cocoa Congestion Control Aware Queuing.pdf:application/pdf}
+}
+
+@inproceedings{lin_kemy_2015,
+	title = {Kemy: {An} {AQM} generator based on machine learning},
+	booktitle = {2015 10th {International} {Conference} on {Communications} and {Networking} in {China} ({ChinaCom})},
+	publisher = {IEEE},
+	author = {Lin, XinAn and Zhang, Dong},
+	year = {2015},
+	pages = {556--561}
+}
+
+@inproceedings{bachl_rax_2019,
+	title = {Rax: {Deep} {Reinforcement} {Learning} for {Congestion} {Control}},
+	booktitle = {{ICC} 2019-2019 {IEEE} {International} {Conference} on {Communications} ({ICC})},
+	publisher = {IEEE},
+	author = {Bachl, Maximilian and Zseby, Tanja and Fabini, Joachim},
+	year = {2019},
+	pages = {1--6}
+}
+
+@inproceedings{hock_experimental_2017,
+	title = {Experimental evaluation of {BBR} congestion control},
+	doi = {10.1109/ICNP.2017.8117540},
+	abstract = {BBR is a recently proposed congestion control. Instead of using packet loss as congestion signal, like many currently used congestion controls, it uses an estimate of the available bottleneck link bandwidth to determine its sending rate. BBR tries to provide high link utilization while avoiding to create queues in bottleneck buffers. The original publication of BBR shows that it can deliver superior performance compared to Cubic TCP in some environments. This paper provides an independent and extensive experimental evaluation of BBR at higher speeds. The experimental setup uses BBR's Linux kernel 4.9 implementation and typical data rates of 10Gbit/s and 1 Gbit/s at the bottleneck link. The experiments vary the flows' round-trip times, the number of flows, and buffer sizes at the bottleneck. The evaluation considers throughput, queuing delay, packet loss, and fairness. On the one hand, the intended behavior of BBR could be observed with our experiments. On the other hand, some severe inherent issues such as increased queuing delays, unfairness, and massive packet loss were also detected. The paper provides an in-depth discussion of BBR's behavior in different experiment setups.},
+	booktitle = {2017 {IEEE} 25th {International} {Conference} on {Network} {Protocols} ({ICNP})},
+	author = {Hock, Mario and Bless, Roland and Zitterbart, Martina},
+	month = oct,
+	year = {2017},
+	keywords = {available bottleneck link bandwidth, Bandwidth, BBR behavior, BBR congestion control, BBR Linux kernel 4.9 implementation, bit rate 1.0 Gbit/s, bit rate 10.0 Gbit/s, bottleneck buffers, computer network performance evaluation, congestion signal, delays, Delays, high link utilization, Internet, Linux, massive packet loss, Packet loss, queueing theory, telecommunication congestion control, Throughput},
+	pages = {1--10},
+	file = {IEEE Xplore Abstract Record:/home/max/.zotero/zotero/zzt443zn.default/zotero/storage/E5QQRJRU/8117540.html:text/html;IEEE Xplore Full Text PDF:/home/max/.zotero/zotero/zzt443zn.default/zotero/storage/AYLSSR73/Hock et al. - 2017 - Experimental evaluation of BBR congestion control.pdf:application/pdf}
+}
+
+@inproceedings{turkovic_interactions_2019,
+	title = {Interactions between {Congestion} {Control} {Algorithms}},
+	doi = {10.23919/TMA.2019.8784674},
+	abstract = {Congestion control algorithms are crucial in achieving high utilization while preventing overloading the network. Over the years, many different congestion control algorithms have been developed, each trying to improve over others in specific situations. However, their interactions and co-existence has, to date, not been thoroughly evaluated, which is the focus of this paper. Through head-to-head comparisons of loss-based, delay-based and hybrid types of congestion control algorithms, we reveal that fairness in resources claimed is often not achieved, especially when flows sharing a link have different round-trip times or belong to different groups.},
+	booktitle = {2019 {Network} {Traffic} {Measurement} and {Analysis} {Conference} ({TMA})},
+	author = {Turkovic, Belma and Kuipers, Fernando A. and Uhlig, Steve},
+	month = jun,
+	year = {2019},
+	keywords = {Bandwidth, congestion control algorithms, delay-based type, Delays, hybrid type, Indexes, Linux, loss-based type, round-trip times, Servers, telecommunication congestion control, Throughput, transport protocols},
+	pages = {161--168},
+	file = {IEEE Xplore Abstract Record:/home/max/.zotero/zotero/zzt443zn.default/zotero/storage/QCBSZ7ER/8784674.html:text/html;IEEE Xplore Full Text PDF:/home/max/.zotero/zotero/zzt443zn.default/zotero/storage/9C3FFZJN/Turkovic et al. - 2019 - Interactions between Congestion Control Algorithms.pdf:application/pdf}
+}
+
+@article{turkovic_fifty_2019,
+	title = {Fifty {Shades} of {Congestion} {Control}: {A} {Performance} and {Interactions} {Evaluation}},
+	shorttitle = {Fifty {Shades} of {Congestion} {Control}},
+	url = {http://arxiv.org/abs/1903.03852},
+	abstract = {Congestion control algorithms are crucial in achieving high utilization while preventing overloading the network. Over the years, many different congestion control algorithms have been developed, each trying to improve in specific situations. However, their interactions and co-existence has, to date, not been thoroughly evaluated, which is the focus of this paper. Through head-to-head comparisons of representatives from loss-based, delay-based and hybrid types of congestion control algorithms, we reveal that fairness in resources claimed is often not attained, especially when flows sharing a link have different RTTs.},
+	urldate = {2020-06-08},
+	journal = {arXiv:1903.03852 [cs]},
+	author = {Turkovic, Belma and Kuipers, Fernando A. and Uhlig, Steve},
+	month = mar,
+	year = {2019},
+	note = {arXiv: 1903.03852},
+	keywords = {Computer Science - Networking and Internet Architecture},
+	file = {arXiv Fulltext PDF:/home/max/.zotero/zotero/zzt443zn.default/zotero/storage/2BRYRZZV/Turkovic et al. - 2019 - Fifty Shades of Congestion Control A Performance .pdf:application/pdf;arXiv.org Snapshot:/home/max/.zotero/zotero/zzt443zn.default/zotero/storage/HW96BT6D/1903.html:text/html}
+}

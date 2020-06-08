@@ -1,0 +1,21 @@
+\input{cocoa_common_beginning.tex}
+%\draw[draw opacity=0,pattern=flexible hatch, pattern color=red, hatch distance=1mm, hatch thickness=0.01mm] (0.75,0) -- ++(0.5,0.5) -- (0.75,0.5) -- cycle;
+\draw[draw opacity=0,fill=red, fill opacity=0.3] (0.75,0) -- ++(0.5,0.5) -- (0.75,0.5) -- cycle;
+%\draw[name path=A] (0,-0.5)-- ++(2.5, 0);
+
+\draw[draw,decorate,decoration={brace}] (0.75,0.5) -- (1.25,0.5) node [midway,above,align=center,font=\fontsize{3pt}{0}\selectfont] {under-\\ utilized\\ link};
+%\draw[densely dotted] (0.75,0) -- (0.75,-0.5);
+
+\draw[dashed] (0,0.5) -- ++(2.5,0);
+\node[align=center,font=\fontsize{2.75pt}{0}\selectfont,inner sep=0mm] at (0.375, 0.25) (optimal) {optimal minimum\\ window (BDP)};
+\draw[->, line width=0.05mm] (optimal) -- (0.375,0.5);
+
+\draw[->, line width=0.05mm] (0,-0.25) -- ++(2.5,0);
+\node[align=center,font=\fontsize{3pt}{0}\selectfont,inner sep=0mm] at (2.35, -0.2) (time) {time};
+\draw[draw=none, line width=0.05mm] (0,-0.3) -- ++(2.5,0);
+
+\draw[->, line width=0.05mm, -dot3-=0.075] (0,-0.25) -- ++(0,1.6);
+\node[anchor=north west, align=center,font=\fontsize{3pt}{0}\selectfont,inner sep=0mm] at (0.01, 1.3) (window) {window (packets in flight)};
+\draw[draw=none, line width=0.05mm] (-0.05,-0.25) -- ++(0,1.6);
+
+\input{cocoa_common_end.tex}

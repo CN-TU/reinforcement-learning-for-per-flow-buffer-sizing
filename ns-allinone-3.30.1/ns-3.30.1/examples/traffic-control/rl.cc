@@ -207,6 +207,7 @@ void experiment (torch::optim::Optimizer* optimizer, torch::optim::Optimizer* op
   auto stop_time_increment = stop_time_end_dis(gen);
   auto cc_int = cc_dis(gen);
   cout << pid << " bw " << bw << endl;
+  cout << pid << " delay " << delay << endl;
   cout << pid << " stop_time_increment " << stop_time_increment << endl;
   cout << pid << " cc_int " << cc_int << endl;
 
@@ -812,7 +813,7 @@ int main (int argc, char **argv)
 
   if (argc > 1) {
     string queue_disc_type = "RLQueueDisc";
-    size_t steps = 20;
+    size_t steps = 100;
     string path = argv[1];
     torch::load(net, path);
 
