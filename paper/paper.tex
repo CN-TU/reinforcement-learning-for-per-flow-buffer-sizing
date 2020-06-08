@@ -12,9 +12,16 @@
 %\acmDOI{TBA}
 %\acmISBN{TBA}
 
+\usepackage[nomain, toc, acronym]{glossaries}
+
+\newacronym{dl}{DL}{Deep Learning}
+\newacronym{rl}{RL}{Reinforcement Learning}
+\newacronym{ours}{OurSolution}{OurSolution}
+
+
 
 \begin{document}
-\title{A \LaTeX\ Template for CoNEXT 2018}
+\title{On-line Learning of Custom Per-flow Queuing Policies with Deep Reinforcement Learning}
 
 %\subtitle{Paper \# XXX, XXX pages}
 % \author{Firstname Lastname}
@@ -31,7 +38,7 @@
 
 
 \begin{abstract}
-spam and eggs
+The increasing number of different, incompatible congestion control algorithms has led to an increased deployment of fair queuing. Fair queuing isolates each network flow and gives it a separate queue. It can thus guarantee fairness for each flow even if the flows' congestion controls are not inherently fair. So far, each queue in the fair queuing system either has a fixed, static maximum size or is managed by an Active Queue Management algorithm like CoDel. In this paper we design and implement an AQM mechanism that dynamically learns the optimal buffer size for each flow with respect to a specified utility function. We show that our Deep Learning based algorithm can correctly fingerprint each flow and assign the optimal queue size. Besides that we also show that our mechanism can even learn completely on-line and can continuously adapt. Finally we demonstrate that the computational overhead of our approach is sufficiently low to allow for deployment on regular hardware. 
 \end{abstract}
 
 \maketitle

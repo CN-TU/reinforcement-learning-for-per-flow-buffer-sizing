@@ -44,7 +44,7 @@
 
 const bool ACTOR_CRITIC = false;
 double LR = 0.01;
-double alpha = 10.0;
+double alpha = 0.01;
 const int nproc = 20;
 
 using namespace std;
