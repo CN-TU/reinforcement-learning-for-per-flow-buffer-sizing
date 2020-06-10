@@ -13,6 +13,8 @@
 %\acmISBN{TBA}
 
 \usepackage[nomain, toc, acronym]{glossaries}
+\usepackage{subfig}
+\usepackage{booktabs}
 
 \newacronym{dl}{DL}{Deep Learning}
 \newacronym{rl}{RL}{Reinforcement Learning}
@@ -110,7 +112,7 @@ We do not use these features directly but instead use 10 exponentially weighted 
 
 One difficulty is to get an exponentially moving average for the rate of incoming/outgoing packets because computing the average of rates is mathematically not easily possible: Instead we compute the exponentially moving average of the interarrival times of incoming packets and the interdeparture times of outgoing packets. We then invert this number to get the rate. Another issue here is that numeric instability and division by zero errors can occur using this approach. Thus, we only use the exponential average with a weight of $2^{-n}$ after at least $n$ packets have arrived. Otherwise we set it to zero. 
 
-Using these features gives us a feature vector of $6\times 10 = 60$ features at each point in time. The features are input into a fully connected neural network consisting of an input layer, three layers of 256 which each have the leaky ReLU \cite{noauthor_rectifier_2020} function applied and finally an output layer which outputs the optimal buffer size. 
+Using these features gives us a feature vector of $6\times 10 = 60$ features at each point in time. The features are fed into a neural network which has one output: The deemed optimal queue size.  
 
 \subsection{Offline Learning}
 
@@ -152,15 +154,133 @@ The training procedure involves the following steps:
 \item Start the next iteration. 
 \end{enumerate}
 
-\section{Implementation}
+\section{Implementation} 
+
+We implement \gls{ours} in the network simulator ns-3 \cite{nsnam_ns-3_nodate} and integrate Pytorch's \cite{paszke_pytorch_2019} C++ API into ns-3 for the \gls{dl}. 
+
+For the simulations we randomly draw a bandwidth (5 to 25\;Mbit/s), a delay (5 to 25\;ms) and duration (3.75\;ms to 6.25\;ms) and a \gls{cca} (New Reno or BIC \cite{lisong_xu_binary_2004}). We use New Reno because it is one of the oldest, most widely deployed \glspl{cca} and BIC because it is similar to Cubic, which is the default in Linux, Windows and most other OSs currently. We cannot use Cubic itself because there is no stable Cubic implementation in ns-3 currently. As the experiment time (the time at which the experiment is launched to determine if a larger or smaller buffer size would be better), we use a random number between 0 and half of the flow duration of the current flow. 
+
+For the simulation we use two hosts that are directly connected to each other. We also experimented initially with a switch connecting these hosts, however, the simulation was a significantly slower. Thus we made the simulation as simple as possible and implemented our \gls{aqm} in front of the bottleneck link, that connects the sender to the receiver. For all other buffers we use a FIFO queue with a buffer of 100 packets (the default). 
+
+One major issue that we encountered bufferbloat (over 100\;ms even if we set our buffers to 1 packet). The reason was that ns-3 also has a additional buffer for each link: First, there's the buffer of the queuing discipline (for which we implement our mechanism) and then there's also a hardware buffer after that. This buffer has a default queue size of 100 packets as well. Thus, on a 10\;Mbit/s link, this hardware buffer alone results in a delay of 120\;ms when simulating bulk transfers. We reduced this buffer to 1 packet and then found the simulations to behave as expected. 
+
+For the \gls{dl}, we used a fully connected neural network consisting of an input layer, three layers of 256 neurons which each have the leaky ReLU \cite{noauthor_rectifier_2020} function applied and finally an output layer which has an output size of 1. All neural networks we use have this architecture. For the learning we chose gradient descent with a learning rate of $0.01$. 
 
 \subsection{Offline Learning}
 
-We chose to run 20 simulations concurrently since our computers have 40 CPUs and every simulation is split in two at the time of the experiment. Thus with 20 simulations we fully utilize the 20 CPUs. 
+We chose to run 20 simulations concurrently since our computers have 40 CPUs and every simulation is split in two at the time of the experiment. Thus with 20 simulations we fully utilize the 20 CPUs. This implies that the batch size used for the \gls{dl} is 20. 
 
 \subsection{Online Learning}
 
-For online learning we run 40 simulations concurrently since we have 40 CPUs and online learning does not split each simulation into two as it happens for offline learning. 
+For online learning we run 40 simulations concurrently since we have 40 CPUs and online learning does not split each simulation into two as it happens for offline learning. The batch size for the \gls{dl} is thus 40. 
+
+\section{Results}
+
+\todo{Include vectorized figures instead of rasterized ones. Include axes labels.}
+
+\subsection{Offline Learning}
+
+\begin{figure}[h]
+\includegraphics[width=\columnwidth]{/mnt/cluster/results/RLQueueDisc/logs/plots/2020-6-6-10-24-18_prediction.png}
+\caption{The prediction of the optimal buffer by the neural network during training.}
+\label{fig:offlineTraining}
+\end{figure}
+\begin{figure}[h]
+\includegraphics[width=\columnwidth]{/mnt/cluster/results/RLQueueDisc/logs/plots/2020-6-6-10-24-18_prediction.png}
+\caption{The prediction of the optimal buffer by the neural network during training.}
+\label{fig:offlineTraining}
+\end{figure}
+
+
+\begin{figure*}[h]
+\centering
+\subfloat[New Reno, varying bandwidth.\label{fig:SmallAlphaNewRenoBandwidth}
+]{
+\includegraphics[width=0.98\columnwidth]{{"../ns-allinone-3.30.1/ns-3.30.1/results/RLQueueDisc/logs/plots/2020-6-6-10-24-18_26000.weights_New Reno_bandwidth"}.pdf}
+}{}
+\subfloat[New Reno, varying delay.\label{fig:SmallAlphaNewRenoDelay}
+]{
+\includegraphics[width=0.98\columnwidth]{{"../ns-allinone-3.30.1/ns-3.30.1/results/RLQueueDisc/logs/plots/2020-6-6-10-24-18_26000.weights_New Reno_delay"}.pdf}
+}{}
+\subfloat[BIC, varying bandwidth\label{fig:SmallAlphaBicBandwidth}
+]{
+\includegraphics[width=0.98\columnwidth]{{"../ns-allinone-3.30.1/ns-3.30.1/results/RLQueueDisc/logs/plots/2020-6-6-10-24-18_26000.weights_Bic_bandwidth"}.pdf}
+}{}
+\subfloat[BIC, varying delay\label{fig:SmallAlphaBicDelay}
+]{
+\includegraphics[width=0.98\columnwidth]{{"../ns-allinone-3.30.1/ns-3.30.1/results/RLQueueDisc/logs/plots/2020-6-6-10-24-18_26000.weights_Bic_delay"}.pdf}
+}{}
+\caption{Change of the buffer size after offline learning when varying bandwidth/delay/\gls{cca}, keeping the other parameters constant at their mean. \todo{Smaller margin for figures.}}
+\label{fig:offlineSmallAlpha}
+\end{figure*}
+
+\subsubsection{$\alpha=0.01$}
+
+When performing offline learning with the tradeoff parameter $\alpha=0.01$ (\autoref{fig:offlineTraining}), the neural network first starts with a prediction that is close to 0 (due to the initialization of neural network weights). During the first couple of thousand training flows, it increases its output and approaches what appears to be the buffer size that works best on average (slightly higher than 15). Then the neural network starts differentiating different flow and learn custom policies for them. After around 250000 flows, the output appears to be stable and doesn't change anymore. There's one noticeable outlier at around 120000 flows. This appears to be some instability that can commonly occur in the early stages of neural network training. 
+
+When the neural network is sufficiently trained, the behavior of the queuing policy can be observed by testing it (\autoref{fig:offlineSmallAlpha}). The plots show the behavior when the parameter on the x-axis is changed on the average queue length, the maximum allowed queue length and on the throughput. 
+
+As expected, when increasing the bandwidth, the neural network outputs a larger maximum queue size, because a larger buffer is needed for New Reno and BIC, when the bandwidth is larger. However, learning the relationship is not difficult: In fact, the neural network would simply need to learn to use the identity function to map the input feature than encodes the incoming or outgoing data rate to the output. 
+
+The results also show that increasing the delay increases the output of the neural network. This is more interesting than for the bandwidth since no input feature directly encodes the delay. Thus, the neural network must observe the pattern of the \gls{cca}, estimate the \gls{rtt} and output the suitable maximum queue size. The right column of \autoref{fig:offlineSmallAlpha} shows that there is clearly a linear relationship between the delay and the output maximum queue size. 
+
+Finally, since BIC has a different multiplicative decrease factor than New Reno ($0.8$ vs $0.5$) the neural network should learn to output different maximum queue sizes for these two. Specifically, we would expect BIC to need a smaller buffer as its decrease is smaller, thus requiring a smaller buffer. Indeed, when comparing the top vs.~the bottom row, the results in \autoref{fig:offlineSmallAlpha} show that the buffer is significantly smaller for BIC than it is for New Reno on average. 
+
+\begin{table}[h]
+\caption{Comparing classification metrics per flow with either discrete (20 different actions) or continuous actions. The tradeoff is always $0.1$.} \label{tab:corrOfflineSmallAlpha}
+\centering
+\begin{tabular}{lrr} \toprule
+\gls{cca} & bandwidth & delay \\ \midrule
+New Reno & 95.5\% & 95.7\% \\
+BIC & 70.6\% & 73.3\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+While the results look as expected, it is better to have a quantifiable measure. For this, we compute the correlation between the value on the x-axis and the maximum queue size output by the neural network. If the neural network learned ideally, the correlation obtained would be 1. \autoref{tab:corrOfflineSmallAlpha} shows that the for New Reno the correlation is very high while for BIC it is high but not as good as for New Reno. We attribute this to the fact that for BIC the buffer that is required is generally smaller (only a couple of packets) and thus fluctuations in the training process are more pronounced. 
+
+\begin{table}[h]
+\caption{The average maximum queue length (in packets) output by the neural network when averaging over all values shown in \autoref{fig:offlineSmallAlpha}.} \label{tab:avgOfflineSmallAlpha}
+\centering
+\begin{tabular}{lr} \toprule
+\gls{cca} & avg.~max.~queue length \\ \midrule
+New Reno & 23 \\
+BIC & 10 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\autoref{tab:avgOfflineSmallAlpha} shows that the average output maximum queue size is more than double for New Reno than for BIC. This shows that the neural network also learned to distinguish between these two \glspl{cca}. Since there are no features that directly indicate the \gls{cca}, the neural network must have learned these by combining the other features and observing distinct behavior for New Reno and BIC. 
+
+\subsubsection{$\alpha=0.01$}
+
+\begin{table}[h]
+\caption{Comparing classification metrics per flow with either discrete (20 different actions) or continuous actions. The tradeoff is always $0.1$.} \label{tab:corrOfflineLargeAlpha}
+\centering
+\begin{tabular}{lrr} \toprule
+\gls{cca} & bandwidth & delay \\ \midrule
+New Reno & 95.3\% & 93.7\% \\
+BIC & 68.2\% & 65.7\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[h]
+\caption{The average maximum queue length (in packets) output by the neural network when averaging over all values shown in \autoref{fig:offlineSmallAlpha}.} \label{tab:avgOfflineLargeAlpha}
+\centering
+\begin{tabular}{lr} \toprule
+\gls{cca} & avg.~max.~queue length \\ \midrule
+New Reno & 12 \\
+BIC & 5 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Results in \autoref{tab:corrOfflineLargeAlpha} and \autoref{tab:corrOfflineSmallAlpha} show that for a larger $\alpha$ \gls{ours} still works as expected and that the average output maximum queue size is smaller, as expected. 
+
+\subsection{Online Learning}
+
+\section{Discussion}
 
 \bibliographystyle{ACM-Reference-Format}
 \bibliography{reference}
