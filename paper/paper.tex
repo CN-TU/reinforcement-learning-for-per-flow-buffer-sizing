@@ -22,6 +22,9 @@
 \newacronym{rtt}{RTT}{Round Trip Time}
 \newacronym{fq}{FQ}{Fair Queuing}
 \newacronym{ml}{ML}{Machine Learning}
+\newacronym{bdp}{BDP}{Bandwidth Delay Product}
+\newacronym{mae}{MAE}{Mean Absolute Error}
+\newacronym{mse}{MSE}{Mean Squared Error}
 
 
 
@@ -32,7 +35,7 @@
 \newcommand{\todo}[1]{\mynote{TODO}{#1}{red}}
 
 \begin{document}
-\title{On-line Learning of Custom Per-flow Queuing Policies with Deep Reinforcement Learning}
+\title{Online Learning Per-flow Queuing Policies}
 
 %\subtitle{Paper \# XXX, XXX pages}
 % \author{Firstname Lastname}
@@ -58,7 +61,7 @@ The increasing number of different, incompatible congestion control algorithms h
 
 New \gls{cca} for TCP and QUIC are still being introduced, with one of the most prominent ones in recent years being BBR \cite{cardwell_bbr:_2016}\todo{Add more refs}. While new \glspl{cca} are commonly being designed with compatibility to other \glspl{cca} in mind, often they do not share the link completely fairly with older \glspl{cca}\todo{Add more refs}. Besides that, network flows using the same \gls{cca} can also be unfair to each other: For example, BBR favors flows with a high \gls{rtt}, while New Reno favors those with a low one \cite{turkovic_interactions_2019,turkovic_fifty_2019}. This unfairness can be mitigated by using \gls{fq} at the bottleneck link, isolating each flow from all other flows and assigning each flow an equal share of bandwidth \cite{dumazet_pkt_sched:_2013}. 
 
-The question of how to manage each queue then arises: The simplest solution is using a static buffer size for each flow. Another solution is to use an advanced \gls{aqm} mechanism like CoDel for each flow. CoDel aims to keep the queue length under a certain threshold, making sure that the queuing delay was smaller than 5\;ms in the last 100\;ms at least once. Otherwise it drops packets to decrease the queue length. Both of these approaches do not differentiate between flows: They apply the same logic to each flow no matter its congestion control and no matter the current bandwidth and \gls{rtt}. \cite{bachl_cocoa_2019} showed that this behavior leads to some flows not being able to claim the full bandwidth that they are entitled to. Other flows might achieve the full bandwidth but keep an unnecessary standing queue. \cite{bachl_rax_2019} proposed a mechanism that adjusts the queue of each flow based on its congestion control and showed that it works well for several common \glspl{cca}. However, their algorithm has parameters that have to be manually adjusted and is not guaranteed to work for every \gls{cca} because it makes the assumption that each flow's congestion window follows a zigzag pattern. Furthermore, their approach is only tailored towards flows that always have data to send while the behavior for application limited flows, that also have idle periods, is not clear. 
+The question of how to manage each queue then arises: The simplest solution is using a static buffer size (queue size) for each flow. Another solution is to use an advanced \gls{aqm} mechanism like CoDel for each flow. CoDel aims to keep the queue length under a certain threshold, making sure that the queuing delay was smaller than 5\;ms in the last 100\;ms at least once. Otherwise it drops packets to decrease the queue length. Both of these approaches do not differentiate between flows: They apply the same logic to each flow no matter its congestion control and no matter the current bandwidth and \gls{rtt}. \cite{bachl_cocoa_2019} showed that this behavior leads to some flows not being able to claim the full bandwidth that they are entitled to. Other flows might achieve the full bandwidth but keep an unnecessary standing queue. \cite{bachl_rax_2019} proposed a mechanism that adjusts the queue of each flow based on its congestion control and showed that it works well for several common \glspl{cca}. However, their algorithm has parameters that have to be manually adjusted and is not guaranteed to work for every \gls{cca} because it makes the assumption that each flow's congestion window follows a zigzag pattern. Furthermore, their approach is only tailored towards flows that always have data to send while the behavior for application limited flows, that also have idle periods, is not clear. 
 
 Instead of a hand-crafted solution like the existing ones, we argue that instead operators of network hardware should be able to simply specify a utility function, and the \gls{aqm} then automatically finds the right queuing policy based on that utility function using \gls{ml}. 
 
@@ -69,12 +72,95 @@ Instead of a hand-crafted solution like the existing ones, we argue that instead
 \caption{If the buffer is too small, loss-based \glspl{cca} cannot fully utilize the link since they send too few data following the multiplicative decrease that occurs after packet loss.}
 \label{fig:tooLittle}
 \end{figure}
-
 \begin{figure}[h]
 \includegraphics[width=\columnwidth]{figures/cocoa_illustration_too_much.pdf}
 \caption{If the buffer is too large, loss-based \glspl{cca} keep an unnecessary standing queue not required for achieving full link utilization.}
 \label{fig:tooMuch}
 \end{figure}
+\begin{figure}[h]
+\includegraphics[width=\columnwidth]{figures/cocoa_illustration_perfect.pdf}
+\caption{For a flow controlled by New Reno, if the buffer is the same size as the \gls{bdp}, no standing queue exists and the full bandwidth is achieved.}
+\label{fig:perfect}
+\end{figure}
+
+If the buffer for a flow is too small, this flow cannot achieve the full bandwidth as shown in \autoref{fig:tooLittle}. On the other side, if the buffer is too large (\autoref{fig:tooMuch}), the flow can achieve the full bandwidth but a standing queue exists, which causes unnecessary delay.  
+
+For the popular \gls{cca} \textit{New Reno}, the buffer size that is necessary in a fair queuing setting is one \gls{bdp}, meaning $\textit{speed}\times\textit{delay}$ (\autoref{fig:perfect}). This is because its multiplicative decrease factor is $0.5$, meaning that after packet loss, the congestion window is halved. For other \glspl{cca} like \textit{Cubic} \cite{ha_cubic:_2008}, the multiplicative decrease factor is $0.7$, meaning that the congestion window is reduced to 70\% of its previous value upon packet loss. This means that the minimum buffer size required to achieve full throughput for a Cubic flow is $\left(\frac{1}{0.7}-1\right)\times \textit{BDP}$, which is around 43\% of the \gls{bdp} and thus less than for New Reno. It follows that an adaptive fair \gls{aqm} must learn the underlying \gls{cca} from a flow to adjust the buffer optimally. 
+
+Because optimal buffer size for many \glspl{cca} depends on the \gls{bdp} and thus on the bandwidth and the delay (\gls{rtt}), for example, a flow only having half the \gls{rtt} of another one only needs half its buffer size to achieve full bandwidth. 
+
+To learn an optimal \gls{aqm} policy, we specify a utility function, which the \gls{ml} based \gls{aqm} then should learn. A simple utility function is for example:
+
+\begin{align}
+U = \textit{bandwidth}-\alpha\times\textit{queue size}
+\end{align}
+
+In this utility function, the choosable parameter $\alpha$ specifies the tradeoff that is chosen between the bandwidth and the buffer size. With $\alpha$ going to zero, the optimum policy approaches the one in which the buffer size is large enough that a flow never underutilizes the link but at the same time the buffer is never going to be larger than necessary if this doesn't provide a benefit in throughput. 
+
+Our \gls{ml} system uses the above utility function to learn the optimal behavior. \gls{ours} computes features for each flow after every packet it receives and then outputs the optimal buffer size that it deems to maximize the utility function. As the input we use the following features: 
+\begin{itemize}
+\item queue size
+\item standard deviation of the queue size 
+\item maximimum allowed buffer size
+\item rate of incoming data
+\item rate of outgoing data
+\item time since the last packet loss
+\end{itemize}
+We do not use these features directly but instead use 10 exponentially weighted averages of them for each feature with weights of $2^{-4}$, $2^{-5}$, ... , $2^{-13}$. The advantage of using exponentially weighted averages is that they do not occupy any space in memory except for their own values. This is opposed to regular moving averages, which have to keep the entire window of data in memory. 
+
+One difficulty is to get an exponentially moving average for the rate of incoming/outgoing packets because computing the average of rates is mathematically not easily possible: Instead we compute the exponentially moving average of the interarrival times of incoming packets and the interdeparture times of outgoing packets. We then invert this number to get the rate. Another issue here is that numeric instability and division by zero errors can occur using this approach. Thus, we only use the exponential average with a weight of $2^{-n}$ after at least $n$ packets have arrived. Otherwise we set it to zero. 
+
+Using these features gives us a feature vector of $6\times 10 = 60$ features at each point in time. The features are input into a fully connected neural network consisting of an input layer, three layers of 256 which each have the leaky ReLU \cite{noauthor_rectifier_2020} function applied and finally an output layer which outputs the optimal buffer size. 
+
+\subsection{Offline Learning}
+
+First, we implement an \gls{ml} system that is capable of learning an optimal queuing policy in a simulator. The idea is that in an ideal setting training is faster. After training in a simulator, the finished neural network can be deployed in a real production setting. 
+
+The training procedure involves the following steps:
+\begin{enumerate}
+\item Draw a random sample of bandwidths, delays, \gls{cca} and flow durations.
+\item Simulate each flow concurrently, compute the feature vector continuously and let the neural network output its optimal buffer size each time a new packet arrives. 
+\item During each flow, at a random time between 0 and the flow length in seconds divided by 2, perform the experiment: Continue one simulation with the current buffer size $+1$ packet and one with the current buffer size $-1$ packet until the end of the flow. 
+\item Wait until all flows are finished
+\item Check for each flow which of the two versions performed better ($+1$ or $-1$) regarding the utility function.
+\item Update the neural network to output the better buffer size when being fed the inputs as they were at the time at which the experimentation started. Specifically, we compute the \gls{mae} between the output of the neural network and the desired output (the one that performed better in the experiment).
+\item Start the next iteration. 
+\end{enumerate}
+
+During deployment, the trained neural network is used but the experiment step is skipped. 
+
+\subsection{Online Learning}
+
+In contrast to offline learning online learning enables to train in deployment. This makes it possible to adapt the behavior slowly over time (over a time span of month or years), for example if new \glspl{cca} emerge. Furthermore, training with real flows is more realistic than training only with simulated flows in a simulation. 
+
+For online training we need two neural networks: 
+\begin{itemize}
+\item An actor network, which outputs the optimal buffer size at each time step.
+\item A critic network, which outputs the utility that it predicts is going to be achieved when keeping the current buffer size until the end of the flow. 
+\end{itemize}
+Both of these neural networks have the same number of layers and neurons. 
+
+The training procedure involves the following steps:
+\begin{enumerate}
+\item Draw a random sample of bandwidths, delays, \gls{cca} and flow durations.
+\item Simulate each flow concurrently, compute the feature vector continuously and let the neural network output its optimal buffer size each time a new packet arrives. 
+\item During each flow, at a random time between 0 and the flow length in seconds divided by 2, perform the experiment: Continue the simulation either with the current buffer size incremented by 1 or decremented by 1 until the end of the flow. 
+\item Wait until all flows are finished
+\item Check for each flow if its decision was better than the expectation of the critic network.
+\item Update the actor neural network to output the better buffer size when being fed the inputs as they were at the time at which the experimentation started. If the experiment was with buffer size $-1$ but this yielded worse results than expected, this implies that the buffer size $+1$ would have been better. As for offline training we use the \gls{mae}. 
+\item Update the critic neural network by using the input vector that was recorded at the time at which the experiment started and the utility that was achieved as the label. Specifically, \gls{mse} is used as the loss function. 
+\item Start the next iteration. 
+\end{enumerate}
+
+\section{Implementation}
+
+\subsection{Offline Learning}
+
+We chose to run 20 simulations concurrently since our computers have 40 CPUs and every simulation is split in two at the time of the experiment. Thus with 20 simulations we fully utilize the 20 CPUs. 
+
+\subsection{Online Learning}
+
+For online learning we run 40 simulations concurrently since we have 40 CPUs and online learning does not split each simulation into two as it happens for offline learning. 
 
 \bibliographystyle{ACM-Reference-Format}
 \bibliography{reference}

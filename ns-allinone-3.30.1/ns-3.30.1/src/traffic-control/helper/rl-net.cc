@@ -123,9 +123,6 @@ torch::Tensor FeatureVector::getCurrentVector() {
 	cattedVector.insert(cattedVector.end(),queueVector.begin(),queueVector.end());
 	auto queueSizeStdSqrted = sqrt_vector(queueVectorStd);
 	cattedVector.insert(cattedVector.end(),queueSizeStdSqrted.begin(),queueSizeStdSqrted.end());
-	// auto queueSizeSkewness = skewness_vector(queueVectorToThePowerOfThree,queueVector,queueSizeStdSqrted);
-	// cattedVector.insert(cattedVector.end(),queueSizeSkewness.begin(),queueSizeSkewness.end());
-	// cattedVector.insert(cattedVector.end(),queueVectorToThePowerOfThree.begin(),queueVectorToThePowerOfThree.end());
 	cattedVector.insert(cattedVector.end(),queueMaxVector.begin(),queueMaxVector.end());
 	auto arrivalVectorInverted = invert(arrivalVector);
 	cattedVector.insert(cattedVector.end(),arrivalVectorInverted.begin(),arrivalVectorInverted.end());
