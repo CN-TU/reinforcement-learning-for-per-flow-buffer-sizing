@@ -40,6 +40,7 @@ for arg in args:
 
 		intermed_path = "/".join(arg.split("/")[:-1])+"/plots/"
 		os.makedirs(intermed_path, exist_ok=True)
-		plt.grid(True)
-		plt.savefig(intermed_path+last_part+"_"+col+".png")
+		# plt.grid(True)
+		plt.tight_layout()
+		plt.savefig(intermed_path+last_part+"_"+col+".png", bbox_inches = 'tight', pad_inches = 0)
 		plt.close()

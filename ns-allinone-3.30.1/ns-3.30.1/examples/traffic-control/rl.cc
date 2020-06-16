@@ -42,10 +42,10 @@
 #include <semaphore.h>
 #include <random>
 
-const bool ACTOR_CRITIC = false;
+const bool ACTOR_CRITIC = true;
 double LR = 0.01;
-double alpha = 0.01;
-const int nproc = 20;
+double alpha = 10.0;
+const int nproc = 40;
 
 using namespace std;
 using namespace ns3;
@@ -67,7 +67,7 @@ double reward_normalizer = 1000000;
 uint32_t mtu = 1446;
 uint32_t every_nth = 10;
 uint64_t iteration = 0;
-double queue_sampling_interval = 0.1;
+double queue_sampling_interval = 0.001;
 ofstream output;
 
 string dir = "results/";
@@ -76,17 +76,40 @@ string date;
 int numSenders = 1;
 int shm_key;
 
-void
-CheckQueueSize (Ptr<QueueDisc> queue, string queue_disc_type, string path)
-{
-  double qSize = queue->GetNBytes ();
-  double qPacket = queue->GetNPackets();
-  // check queue size every 1/10 of a second
-  Simulator::Schedule (Seconds (queue_sampling_interval), &CheckQueueSize, queue, queue_disc_type, path);
+unordered_map<string,vector<double>> queue_size_results;
 
-  ofstream fPlotQueue (dir + queue_disc_type + "/queueTraces/"+path+"_queue.plotme", ios::out | ios::app);
+void
+CheckQueueSize (Ptr<QueueDisc> queue_given, string queue_disc_type, string path)
+{
+  bool invalid = false;
+  // cout << queue->GetNQueueDiscClasses () << endl;
+  Ptr<QueueDisc> queue = nullptr;
+  if (queue_disc_type.compare("RLQueueDisc") == 0) {
+    if (queue_given->GetNQueueDiscClasses () > 0) {
+      Ptr<RLFlow> flow = StaticCast<RLFlow> (queue_given->GetQueueDiscClass (0));
+      queue = StaticCast<RlInternalQueueDisc> (flow->GetQueueDisc());
+    } else {
+      invalid = true;
+    }
+  } else {
+    queue = queue_given;
+  }
+  Simulator::Schedule (Seconds (queue_sampling_interval), &CheckQueueSize, queue_given, queue_disc_type, path);
+  if (invalid) {
+    return;
+  }
+
+  // double qSize = queue->GetNBytes ();
+  double qPacket = queue->GetNPackets();
+  auto qMaxSizeObject = queue->GetMaxSize();
+  auto unit = qMaxSizeObject.GetUnit();
+  assert(unit == QueueSizeUnit::PACKETS);
+  double qPacketMax = qMaxSizeObject.GetValue();
+
+  ofstream fPlotQueue (dir + queue_disc_type + "/queueTraces/"+path+".plotme", ios::out | ios::app);
   // fPlotQueue << Simulator::Now ().GetSeconds () << " " << qSize << endl;
-  fPlotQueue << Simulator::Now ().GetSeconds () << " " << qPacket << " " << qSize << endl;
+  queue_size_results[queue_disc_type + "/queueTraces/"+path].push_back(qPacket);
+  fPlotQueue << Simulator::Now ().GetSeconds () << " " << qPacket << " " << qPacketMax << endl;
   fPlotQueue.close ();
 }
 
@@ -139,7 +162,7 @@ void cleanup() {
   }
 }
 
-void experiment (torch::optim::Optimizer* optimizer, torch::optim::Optimizer* optimizer_reward, string queue_disc_type="RLQueueDisc", double stopTime=5)
+void experiment (torch::optim::Optimizer* optimizer, torch::optim::Optimizer* optimizer_reward, string queue_disc_type="RLQueueDisc", double stopTime=10)
 {
   if (queue_disc_type.compare("RLQueueDisc") == 0) {
 
@@ -215,7 +238,7 @@ void experiment (torch::optim::Optimizer* optimizer, torch::optim::Optimizer* op
 
   string congestion_control = cc_int==0 ? "NewReno" : "Bic";
 
-  std::uniform_real_distribution<> action_time_dis(0.0, stopTime/2);
+  std::uniform_real_distribution<> action_time_dis(0.0, stopTime*3/4);
   auto proposed_time_for_action = action_time_dis(gen);
 
   string queue_disc = string ("ns3::") + queue_disc_type;
@@ -343,16 +366,6 @@ void experiment (torch::optim::Optimizer* optimizer, torch::optim::Optimizer* op
 
 
   string logging_path = date+"/"+to_string(iteration)+"/"+to_string(n_already_forked)+"/"+to_string(child_pid==0)+"_"+to_string(getpid());
-
-  // Simulator::ScheduleNow (&CheckQueueSize, queue, queue_disc_type, logging_path);
-  // string dirToSave = "mkdir -p " + dir + queue_disc_type;
-  // if (system ((dirToSave + "/cwndTraces/"+date+"/"+to_string(iteration)+"/"+to_string(n_already_forked)+"/").c_str ()) == -1
-  //     || system ((dirToSave + "/queueTraces/"+date+"/"+to_string(iteration)+"/"+to_string(n_already_forked)+"/").c_str ()) == -1)
-  //   {
-  //     exit (1);
-  //   }
-  // Simulator::Schedule (Seconds (queue_sampling_interval), &TraceCwnd, queue_disc_type, logging_path);
-  // bottleneckLink.EnablePcapAll("rl_"+to_string(iteration)+"_"+to_string(child_pid==0));
 
 
 
@@ -635,9 +648,9 @@ void experiment (torch::optim::Optimizer* optimizer, torch::optim::Optimizer* op
   Simulator::Destroy ();
 }
 
-void evaluate (string file_name, string extracted_path, double bw, double delay, int32_t cc_int, double stopTime=5)
+void evaluate (string file_name, string extracted_path, double bw, double delay, int32_t cc_int, string queue_disc_type="RLQueueDisc", double stopTime=5, int32_t max_queue_length=-1)
 {
-  string queue_disc_type = "RLQueueDisc";
+  // cout << "queue_disc_type " << queue_disc_type << endl;
   cout << "delay " << delay << endl;
   cout << "bw " << bw << endl;
   cout << "cc_int " << cc_int << endl;
@@ -668,10 +681,12 @@ void evaluate (string file_name, string extracted_path, double bw, double delay,
   Config::SetDefault ("ns3::TcpSocketBase::LimitedTransmit", BooleanValue (false));
   Config::SetDefault ("ns3::TcpSocket::SegmentSize", UintegerValue (mtu));
   Config::SetDefault ("ns3::TcpSocketBase::WindowScaling", BooleanValue (true));
-  Config::SetDefault ("ns3::FifoQueueDisc::MaxSize", QueueSizeValue (QueueSize ("100p")));
+  // Config::SetDefault ("ns3::FifoQueueDisc::MaxSize", QueueSizeValue (QueueSize ("100p")));
+  if (max_queue_length >= 0) {
+    Config::SetDefault (queue_disc+"::MaxSize", QueueSizeValue (QueueSize (to_string(max_queue_length)+"p")));
+  }
   Config::SetDefault ("ns3::RlInternalQueueDisc::MaxSize", QueueSizeValue (QueueSize ("1p")));
   Config::SetDefault ("ns3::RlInternalQueueDisc::EveryNth", UintegerValue (every_nth));
-  // cout << "congestion_control " << congestion_control << endl;
   Config::SetDefault ("ns3::TcpL4Protocol::SocketType", StringValue ("ns3::Tcp" + congestion_control));
 
   InternetStackHelper internet;
@@ -720,12 +735,14 @@ void evaluate (string file_name, string extracted_path, double bw, double delay,
   Ptr<QueueDisc> queue = queueDiscs.Get (0);
 
   Ptr<RLQueueDisc> actual_qdisc = nullptr;
+  Ptr<QueueDisc> queue_for_logging = queue;
   if (queue_disc_type.compare("RLQueueDisc") == 0) {
     actual_qdisc = DynamicCast<RLQueueDisc> (queue);
     actual_qdisc->m_time_for_action = proposed_time_for_action;
     actual_qdisc->SetRlNet(net);
     actual_qdisc->SetBw(bw);
     actual_qdisc->SetDelay(delay);
+    queue_for_logging = actual_qdisc;
   }
 
   BulkSendHelper ftp ("ns3::TcpSocketFactory", Address ());
@@ -742,17 +759,18 @@ void evaluate (string file_name, string extracted_path, double bw, double delay,
   sinkApp.Stop (Seconds (stopTime));
 
 
+  auto suffix = "/cc_"+to_string(cc_int)+"_bw_"+to_string(bw)+"_delay_"+to_string(delay);
+  auto actual_key = extracted_path+suffix;
+  string dirToSave = dir + queue_disc_type;
+  if (system (("mkdir -p " + dirToSave + "/cwndTraces/"+extracted_path+"/").c_str ()) == -1
+    || system (("rm -rf " + dirToSave + "/cwndTraces/"+extracted_path+"/"+suffix+".plotme").c_str ()) == -1
+    || system (("mkdir -p " + dirToSave + "/queueTraces/"+extracted_path+"/").c_str ()) == -1
+    || system (("rm -rf " + dirToSave + "/queueTraces/"+extracted_path+"/"+suffix+".plotme").c_str ()) == -1) {
+    exit (1);
+  }
 
-  Simulator::ScheduleNow (&CheckQueueSize, queue, queue_disc_type, extracted_path+"/bw_"+to_string(bw)+"_delay_"+to_string(delay));
-
-  string dirToSave = "mkdir -p " + dir + queue_disc_type;
-  if (system ((dirToSave + "/cwndTraces/"+extracted_path+"/").c_str ()) == -1
-      || system ((dirToSave + "/queueTraces/"+extracted_path+"/").c_str ()) == -1)
-    {
-      exit (1);
-    }
-
-  Simulator::Schedule (Seconds (queue_sampling_interval), &TraceCwnd, queue_disc_type, extracted_path+"/bw_"+to_string(bw)+"_delay_"+to_string(delay));
+  Simulator::ScheduleNow (&CheckQueueSize, queue_for_logging, queue_disc_type, actual_key);
+  // Simulator::Schedule (Seconds (queue_sampling_interval), &TraceCwnd, queue_disc_type, actual_key);
 
 
 
@@ -762,24 +780,68 @@ void evaluate (string file_name, string extracted_path, double bw, double delay,
   Ptr<PacketSink> sink1 = DynamicCast<PacketSink> (sinkApp.Get(0));
 	cout << "Total Bytes Received: " << sink1->GetTotalRx () << endl;
 
-  // cout << "family_status " << family_status << endl;
+  double average_queue_length = -1;
+  double average_max_queue_length = -1;
+  double average_throughput = -1;
+  double reward_total = -1;
 
-  double summed_length = actual_qdisc->GetSummedQueueLength();
-  double summed_max_length = actual_qdisc->GetSummedMaxQueueLength();
-  double sent_bytes = actual_qdisc->GetSentBytes();
-  double summed_length_until = actual_qdisc->GetSummedQueueLengthUntilDecision();
-  double sent_bytes_until = actual_qdisc->GetSentBytesUntilDecision();
-  assert (summed_length_until <= summed_length);
-  assert (sent_bytes_until <= sent_bytes);
+  if (queue_disc_type.compare("RLQueueDisc") == 0) {
+    double summed_length = actual_qdisc->GetSummedQueueLength();
+    double summed_max_length = actual_qdisc->GetSummedMaxQueueLength();
+    // double sent_bytes = actual_qdisc->GetSentBytes();
+    // double summed_length_until = actual_qdisc->GetSummedQueueLengthUntilDecision();
+    // double sent_bytes_until = actual_qdisc->GetSentBytesUntilDecision();
+    // assert (summed_length_until <= summed_length);
+    // assert (sent_bytes_until <= sent_bytes);
 
-  double average_queue_length = summed_length/stopTime;
-  double average_max_queue_length = summed_max_length/stopTime;
-  double average_throughput = sent_bytes/stopTime;
 
-  double reward_total = (average_throughput - alpha*average_queue_length*mtu)/reward_normalizer;
 
-  // assert (decision != -1);
-  uint32_t inspected = actual_qdisc->GetAlreadyInspected();
+    // actual_key = queue_disc_type + "/queueTraces/"+actual_key;
+    // auto v = queue_size_results[actual_key];
+    // double alternative_average_queue_length = ((double) (std::accumulate(v.begin(), v.end(), 0)))/v.size();
+    // queue_size_results.erase(actual_key);
+
+
+
+    average_queue_length = summed_length/stopTime;
+
+    // cout << "alternative length " << alternative_average_queue_length << "normal length " << average_queue_length << endl;
+
+
+
+    average_max_queue_length = summed_max_length/stopTime;
+    // average_throughput = sent_bytes/stopTime;
+    average_throughput = ((double) sink1->GetTotalRx())/stopTime;
+
+    // assert (decision != -1);
+    uint32_t inspected = actual_qdisc->GetAlreadyInspected();
+  } else {
+    // std::vector<string> keys;
+    // for(auto kv : queue_size_results) {
+    //   keys.push_back(kv.first);
+    // }
+    // cout << "queue_size_results keys " << keys << endl;
+
+    actual_key = queue_disc_type + "/queueTraces/"+actual_key;
+
+    auto v = queue_size_results[actual_key];
+    average_queue_length = ((double) (std::accumulate(v.begin(), v.end(), 0)))/v.size();
+
+    queue_size_results.erase(actual_key);
+
+    // average_max_queue_length = summed_max_length/stopTime;
+    average_throughput = ((double) sink1->GetTotalRx())/stopTime;
+
+    if (queue_disc_type.compare("FqCoDelQueueDisc") != 0) {
+
+      // auto type_id = TypeId("ns3::FifoQueueDisc");
+      // TypeId::AttributeInformation info_object;
+      // type_id.LookupAttributeByName("MaxSize", &info_object);
+      // string queue_size_value = (info_object.initialValue)->SerializeToString();
+      average_max_queue_length = (queue->GetMaxSize()).GetValue();
+    }
+  }
+  reward_total = (average_throughput - alpha*average_queue_length*mtu)/reward_normalizer;
 
   // cout << "bw " << bw << endl;
   cout << "average_throughput " << average_throughput << endl;
@@ -812,24 +874,65 @@ int main (int argc, char **argv)
   torch::optim::SGD optimizer_reward = torch::optim::SGD(reward_params, /*lr=*/LR);
 
   if (argc > 1) {
-    string queue_disc_type = "RLQueueDisc";
+    string queue_disc_type = argv[1];
     size_t steps = 100;
-    string path = argv[1];
-    torch::load(net, path);
 
-    string extracted_path = path.substr(path.find_last_of("/"), path.length());
-    extracted_path = extracted_path.substr(0, path.find_last_of("."));
+    double delay_max = 25;
+    double delay_min = 5;
+    double bw_max = 25;
+    double bw_min = 5;
+
+    double bw_mean = (bw_max+bw_min)/2;
+    double delay_mean = (delay_max+delay_min)/2;
+
+
+
+
+
+    // string extracted_path = "different_max_queue_sizes";
+
+    // string initial_path_prefix = dir+queue_disc_type+"/logs/";
+    // string dirToSave = "mkdir -p " + initial_path_prefix;
+    // if (system (dirToSave.c_str ()) == -1)
+    //   {
+    //     exit (1);
+    //   }
+
+    // for (size_t i = CC_LOWER; i < CC_UPPER+1; i++) {
+    //   string file_name = initial_path_prefix+extracted_path+"_max_"+to_string(i)+".out";
+
+    //   log_file.open(file_name, fstream::out);
+
+    //   log_file << "bw" << ";" << "delay" << ";" << "average_throughput" << ";" << "average_queue_length" << ";" << "average_max_queue_length" << ";" << "reward" << endl;
+    //   log_file.close();
+
+    //   for (size_t j = 0; j < steps; j++) {
+    //     evaluate(file_name, extracted_path, bw_mean, delay_mean, i,queue_disc_type,5.0,i);
+    //   }
+    // }
+    // exit(0);
+
+
+
+
+
+    string extracted_path = "normal";
+    if (argc > 2) {
+      string path = argv[2];
+      torch::load(net, path);
+      extracted_path = path.substr(path.find_last_of("/"), path.length());
+      extracted_path = extracted_path.substr(0, path.find_last_of("."));
+    }
+
+    string initial_path_prefix = dir+queue_disc_type+"/logs/";
+    string dirToSave = "mkdir -p " + initial_path_prefix;
+    if (system (dirToSave.c_str ()) == -1)
+      {
+        exit (1);
+      }
 
     for (size_t i = CC_LOWER; i < CC_UPPER+1; i++) {
-      string file_name = dir+queue_disc_type+"/logs/"+extracted_path+"_cc_"+to_string(i)+"_delay"+".out";
-
-      double delay_max = 25;
-      double delay_min = 5;
-      double bw_max = 25;
-      double bw_min = 5;
-
-      double bw_mean = (bw_max+bw_min)/2;
-      double delay_mean = (delay_max+delay_min)/2;
+      string file_name = initial_path_prefix+extracted_path+"_cc_"+to_string(i)+"_delay"+".out";
 
       log_file.open(file_name, fstream::out);
 
@@ -839,7 +942,7 @@ int main (int argc, char **argv)
       for (size_t j = 0; j < steps; j++) {
         double delay = delay_min+(delay_max-delay_min)/(steps-1)*j;
         cout << "delay " << delay << endl;
-        evaluate(file_name, extracted_path, bw_mean, delay, i);
+        evaluate(file_name, extracted_path, bw_mean, delay, i,queue_disc_type);
       }
 
       file_name = dir+queue_disc_type+"/logs/"+extracted_path+"_cc_"+to_string(i)+"_bw"+".out";
@@ -852,7 +955,7 @@ int main (int argc, char **argv)
       for (size_t j = 0; j < steps; j++) {
         double bw = bw_min+(bw_max-bw_min)/(steps-1)*j;
         cout << "bw " << bw << endl;
-        evaluate(file_name, extracted_path, bw, delay_mean, i);
+        evaluate(file_name, extracted_path, bw, delay_mean, i,queue_disc_type);
       }
     }
     exit(0);

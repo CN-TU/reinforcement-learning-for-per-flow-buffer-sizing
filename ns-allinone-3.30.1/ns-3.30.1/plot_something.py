@@ -15,8 +15,8 @@ for path in paths:
 	ys = results[1:]
 	for i, y in enumerate(ys):
 		# print("i", i, "y", y)
-		if i > 0:
-			plt.twinx()
+		# if i > 0:
+		# 	plt.twinx()
 		plt.plot(results[0], y)
 	appropriate_dir = "/".join(path.split("/")[:-1])+"/"
 	file_name = ".".join(path.split("/")[-1].split(".")[:-1])+".pdf"

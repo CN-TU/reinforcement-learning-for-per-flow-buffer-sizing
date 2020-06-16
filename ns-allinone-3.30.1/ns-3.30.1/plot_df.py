@@ -47,9 +47,11 @@ for path in paths:
 	x = df[relevant_thing].tolist()
 
 	print("correlation max", np.corrcoef(x, average_max_queue_length)[0,1])
-	print("correlation avg", np.corrcoef(x, average_queue_length)[0,1])
+	# print("correlation avg", np.corrcoef(x, average_queue_length)[0,1])
 	print("avg max", statistics.mean(average_max_queue_length))
-	print("avg avg", statistics.mean(average_queue_length))
+	# print("avg avg", statistics.mean(average_queue_length))
+	print("throughput avg", np.mean(average_throughput))
+	print("queue avg", np.mean(average_queue_length))
 
 	# average_queue_length = windowize(df["average_queue_length"].tolist())
 	# average_max_queue_length = windowize(df["average_max_queue_length"].tolist())
@@ -59,7 +61,8 @@ for path in paths:
 
 	things = []
 	things += (ax1.plot(x, average_queue_length, label="queue length"))
-	things += (ax1.plot(x, average_max_queue_length, label="max queue length"))
+	if (np.array(average_max_queue_length) > -1).all():
+		things += (ax1.plot(x, average_max_queue_length, label="max queue length"))
 
 	ax2 = ax1.twinx()
 	things += (ax2.plot(x, average_throughput, label="throughput", color="red"))
@@ -79,5 +82,6 @@ for path in paths:
 	# print("things", things)
 	plt.legend(things, [l.get_label() for l in things], loc="lower right")
 	# plt.title(cc_name)
-	plt.savefig(appropriate_dir+file_name)
+	plt.tight_layout()
+	plt.savefig(appropriate_dir+file_name, bbox_inches = 'tight', pad_inches = 0)
 	plt.close()

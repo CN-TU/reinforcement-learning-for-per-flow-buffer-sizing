@@ -214,7 +214,7 @@ QueueBase::SetMaxSize (QueueSize size)
 
   m_maxSize = size;
 
-  // Commented out by Max
+  // XXX: Commented out by Max
   // NS_ABORT_MSG_IF (size < GetCurrentSize (),
   //                  "The new maximum queue size cannot be less than the current size");
 }

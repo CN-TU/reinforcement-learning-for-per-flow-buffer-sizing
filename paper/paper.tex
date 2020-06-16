@@ -67,6 +67,8 @@ The question of how to manage each queue then arises: The simplest solution is u
 
 Instead of a hand-crafted solution like the existing ones, we argue that instead operators of network hardware should be able to simply specify a utility function, and the \gls{aqm} then automatically finds the right queuing policy based on that utility function using \gls{ml}. 
 
+To make our work reproducible and to encourage further research, we make the code, figure and data of this work publicly available\footnote{\url{https://github.com/CN-TU/reinforcement-learning-for-per-flow-buffer-sizing}}. 
+
 \section{Concept}
 
 \begin{figure}[h]
@@ -81,7 +83,7 @@ Instead of a hand-crafted solution like the existing ones, we argue that instead
 \end{figure}
 \begin{figure}[h]
 \includegraphics[width=\columnwidth]{figures/cocoa_illustration_perfect.pdf}
-\caption{For a flow controlled by New Reno, if the buffer is the same size as the \gls{bdp}, no standing queue exists and the full bandwidth is achieved.}
+\caption{For a flow controlled by New Reno, if the buffer is the same size as the \gls{bdp}, no standing queue exists and the full bandwidth is achieved.\todo{Fix arrow on x-axis}}
 \label{fig:perfect}
 \end{figure}
 
@@ -94,7 +96,7 @@ Because optimal buffer size for many \glspl{cca} depends on the \gls{bdp} and th
 To learn an optimal \gls{aqm} policy, we specify a utility function, which the \gls{ml} based \gls{aqm} then should learn. A simple utility function is for example:
 
 \begin{align}
-U = \textit{bandwidth}-\alpha\times\textit{queue size}
+\textit{Utility} = \textit{bandwidth}-\alpha\times\textit{queue size}
 \end{align}
 
 In this utility function, the choosable parameter $\alpha$ specifies the tradeoff that is chosen between the bandwidth and the buffer size. With $\alpha$ going to zero, the optimum policy approaches the one in which the buffer size is large enough that a flow never underutilizes the link but at the same time the buffer is never going to be larger than necessary if this doesn't provide a benefit in throughput. 
@@ -180,41 +182,35 @@ For online learning we run 40 simulations concurrently since we have 40 CPUs and
 
 \subsection{Offline Learning}
 
-\begin{figure}[h]
-\includegraphics[width=\columnwidth]{/mnt/cluster/results/RLQueueDisc/logs/plots/2020-6-6-10-24-18_prediction.png}
-\caption{The prediction of the optimal buffer by the neural network during training.}
-\label{fig:offlineTraining}
-\end{figure}
-\begin{figure}[h]
-\includegraphics[width=\columnwidth]{/mnt/cluster/results/RLQueueDisc/logs/plots/2020-6-6-10-24-18_prediction.png}
-\caption{The prediction of the optimal buffer by the neural network during training.}
-\label{fig:offlineTraining}
-\end{figure}
+\subsubsection{$\alpha=0.01$}
 
+\begin{figure}[h]
+\includegraphics[width=\columnwidth]{/mnt/cluster/results/RLQueueDisc/logs/plots/2020-6-6-10-24-18_prediction.png}
+\caption{The prediction of the optimal buffer by the neural network during offline training with the tradeoff $\alpha=0.01$.}
+\label{fig:offlineTraining}
+\end{figure}
 
 \begin{figure*}[h]
 \centering
 \subfloat[New Reno, varying bandwidth.\label{fig:SmallAlphaNewRenoBandwidth}
 ]{
-\includegraphics[width=0.98\columnwidth]{{"../ns-allinone-3.30.1/ns-3.30.1/results/RLQueueDisc/logs/plots/2020-6-6-10-24-18_26000.weights_New Reno_bandwidth"}.pdf}
+\includegraphics[width=0.98\columnwidth]{{"../ns-allinone-3.30.1/ns-3.30.1/results/RLQueueDisc/logs/plots/2020-6-6-10-24-18_81000.weights_New Reno_bandwidth"}.pdf}
 }{}
 \subfloat[New Reno, varying delay.\label{fig:SmallAlphaNewRenoDelay}
 ]{
-\includegraphics[width=0.98\columnwidth]{{"../ns-allinone-3.30.1/ns-3.30.1/results/RLQueueDisc/logs/plots/2020-6-6-10-24-18_26000.weights_New Reno_delay"}.pdf}
+\includegraphics[width=0.98\columnwidth]{{"../ns-allinone-3.30.1/ns-3.30.1/results/RLQueueDisc/logs/plots/2020-6-6-10-24-18_81000.weights_New Reno_delay"}.pdf}
 }{}
 \subfloat[BIC, varying bandwidth\label{fig:SmallAlphaBicBandwidth}
 ]{
-\includegraphics[width=0.98\columnwidth]{{"../ns-allinone-3.30.1/ns-3.30.1/results/RLQueueDisc/logs/plots/2020-6-6-10-24-18_26000.weights_Bic_bandwidth"}.pdf}
+\includegraphics[width=0.98\columnwidth]{{"../ns-allinone-3.30.1/ns-3.30.1/results/RLQueueDisc/logs/plots/2020-6-6-10-24-18_81000.weights_Bic_bandwidth"}.pdf}
 }{}
 \subfloat[BIC, varying delay\label{fig:SmallAlphaBicDelay}
 ]{
-\includegraphics[width=0.98\columnwidth]{{"../ns-allinone-3.30.1/ns-3.30.1/results/RLQueueDisc/logs/plots/2020-6-6-10-24-18_26000.weights_Bic_delay"}.pdf}
+\includegraphics[width=0.98\columnwidth]{{"../ns-allinone-3.30.1/ns-3.30.1/results/RLQueueDisc/logs/plots/2020-6-6-10-24-18_81000.weights_Bic_delay"}.pdf}
 }{}
 \caption{Change of the buffer size after offline learning when varying bandwidth/delay/\gls{cca}, keeping the other parameters constant at their mean. \todo{Smaller margin for figures.}}
 \label{fig:offlineSmallAlpha}
 \end{figure*}
-
-\subsubsection{$\alpha=0.01$}
 
 When performing offline learning with the tradeoff parameter $\alpha=0.01$ (\autoref{fig:offlineTraining}), the neural network first starts with a prediction that is close to 0 (due to the initialization of neural network weights). During the first couple of thousand training flows, it increases its output and approaches what appears to be the buffer size that works best on average (slightly higher than 15). Then the neural network starts differentiating different flow and learn custom policies for them. After around 250000 flows, the output appears to be stable and doesn't change anymore. There's one noticeable outlier at around 120000 flows. This appears to be some instability that can commonly occur in the early stages of neural network training. 
 
@@ -227,7 +223,7 @@ The results also show that increasing the delay increases the output of the neur
 Finally, since BIC has a different multiplicative decrease factor than New Reno ($0.8$ vs $0.5$) the neural network should learn to output different maximum queue sizes for these two. Specifically, we would expect BIC to need a smaller buffer as its decrease is smaller, thus requiring a smaller buffer. Indeed, when comparing the top vs.~the bottom row, the results in \autoref{fig:offlineSmallAlpha} show that the buffer is significantly smaller for BIC than it is for New Reno on average. 
 
 \begin{table}[h]
-\caption{Comparing classification metrics per flow with either discrete (20 different actions) or continuous actions. The tradeoff is always $0.1$.} \label{tab:corrOfflineSmallAlpha}
+\caption{Correlation between bandwidth/delay and output buffer size for a tradeoff of $0.1$ with offline learning.} \label{tab:corrOfflineSmallAlpha}
 \centering
 \begin{tabular}{lrr} \toprule
 \gls{cca} & bandwidth & delay \\ \midrule
@@ -240,7 +236,7 @@ BIC & 70.6\% & 73.3\% \\
 While the results look as expected, it is better to have a quantifiable measure. For this, we compute the correlation between the value on the x-axis and the maximum queue size output by the neural network. If the neural network learned ideally, the correlation obtained would be 1. \autoref{tab:corrOfflineSmallAlpha} shows that the for New Reno the correlation is very high while for BIC it is high but not as good as for New Reno. We attribute this to the fact that for BIC the buffer that is required is generally smaller (only a couple of packets) and thus fluctuations in the training process are more pronounced. 
 
 \begin{table}[h]
-\caption{The average maximum queue length (in packets) output by the neural network when averaging over all values shown in \autoref{fig:offlineSmallAlpha}.} \label{tab:avgOfflineSmallAlpha}
+\caption{The average maximum queue length (in packets) output by the neural network after offline learning (tradeoff $0.01$) when averaging over all values shown in \autoref{fig:offlineSmallAlpha}.} \label{tab:avgOfflineSmallAlpha}
 \centering
 \begin{tabular}{lr} \toprule
 \gls{cca} & avg.~max.~queue length \\ \midrule
@@ -252,10 +248,18 @@ BIC & 10 \\
 
 \autoref{tab:avgOfflineSmallAlpha} shows that the average output maximum queue size is more than double for New Reno than for BIC. This shows that the neural network also learned to distinguish between these two \glspl{cca}. Since there are no features that directly indicate the \gls{cca}, the neural network must have learned these by combining the other features and observing distinct behavior for New Reno and BIC. 
 
-\subsubsection{$\alpha=0.01$}
+\subsubsection{$\alpha=10$}
+
+\begin{figure}[h]
+\includegraphics[width=\columnwidth]{/mnt/cluster/results/RLQueueDisc/logs/plots/2020-6-4-15-39-25_prediction.png}
+\caption{The prediction of the optimal buffer by the neural network during offline training with the tradeoff $\alpha=10$.}
+\label{fig:offlineTrainingLargeAlpha}
+\end{figure}
+
+\autoref{fig:offlineTrainingLargeAlpha} shows that also for the larger $\alpha$, the neural network outputs converge quickly after a couple of 10000 flows. 
 
 \begin{table}[h]
-\caption{Comparing classification metrics per flow with either discrete (20 different actions) or continuous actions. The tradeoff is always $0.1$.} \label{tab:corrOfflineLargeAlpha}
+\caption{Correlation between bandwidth/delay and output buffer size for a tradeoff of $10$ with offline learning.} \label{tab:corrOfflineLargeAlpha}
 \centering
 \begin{tabular}{lrr} \toprule
 \gls{cca} & bandwidth & delay \\ \midrule
@@ -266,7 +270,7 @@ BIC & 68.2\% & 65.7\% \\
 \end{table}
 
 \begin{table}[h]
-\caption{The average maximum queue length (in packets) output by the neural network when averaging over all values shown in \autoref{fig:offlineSmallAlpha}.} \label{tab:avgOfflineLargeAlpha}
+\caption{The average maximum queue length (in packets) output by the neural network after offline learning (tradeoff $10$) when averaging over all values shown in \autoref{tab:corrOfflineLargeAlpha}.} \label{tab:avgOfflineLargeAlpha}
 \centering
 \begin{tabular}{lr} \toprule
 \gls{cca} & avg.~max.~queue length \\ \midrule
@@ -279,6 +283,40 @@ BIC & 5 \\
 Results in \autoref{tab:corrOfflineLargeAlpha} and \autoref{tab:corrOfflineSmallAlpha} show that for a larger $\alpha$ \gls{ours} still works as expected and that the average output maximum queue size is smaller, as expected. 
 
 \subsection{Online Learning}
+
+\subsubsection{$\alpha=10$}
+
+\begin{figure}[h]
+\includegraphics[width=\columnwidth]{/mnt/cluster/results/RLQueueDisc/logs/plots/2020-6-1-16-41-30_prediction.png}
+\caption{The prediction of the optimal buffer by the neural network during online training with the tradeoff $\alpha=10$.}
+\label{fig:onlineTraining}
+\end{figure}
+
+\autoref{fig:onlineTraining} shows that it takes significantly more network flows for training to converge. This is not surprising since for online training there are two neural networks involved and there is inherently more noise: For the offline training, we can perform A/B testing and thus the reward given to the neural network is always correct. On the other side, for online learning, the reward depends also on the output of the critic network and the critic network doesn't have to be 100\% correct when it outputs the reward that it expected. Thus, the more noisy reward for online training makes it converge more slowly. 
+
+\begin{table}[h]
+\caption{Correlation between bandwidth/delay and output buffer size for a tradeoff of $10$ with online learning.} \label{tab:corrOnlineLargeAlpha}
+\centering
+\begin{tabular}{lrr} \toprule
+\gls{cca} & bandwidth & delay \\ \midrule
+New Reno & 79.3\% & 89.6\% \\
+BIC & 21.2\% & 59.0\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[h]
+\caption{The average maximum queue length (in packets) output by the neural network after online learning (tradeoff $10$) when averaging over all values shown in \autoref{tab:corrOnlineLargeAlpha}.} \label{tab:avgOnlineLargeAlpha}
+\centering
+\begin{tabular}{lr} \toprule
+\gls{cca} & avg.~max.~queue length \\ \midrule
+New Reno & 10.6 \\
+BIC & 6.2 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\autoref{tab:corrOnlineLargeAlpha} and \autoref{tab:avgOnlineLargeAlpha} show that online learning also learns the expected mapping between \gls{cca}, bandwidth and delay to buffer size, albeit training takes longer and results are more noisy than for online learning as can be seen in the lower correlations when comparing \autoref{tab:avgOfflineLargeAlpha} with \autoref{tab:avgOnlineLargeAlpha}
 
 \section{Discussion}
 
