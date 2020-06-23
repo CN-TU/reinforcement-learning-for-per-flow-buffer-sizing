@@ -17,9 +17,19 @@ for path in paths:
 		# print("i", i, "y", y)
 		# if i > 0:
 		# 	plt.twinx()
-		plt.plot(results[0], y)
+		if i == 0 or not ("FqCoDelQueueDisc" in path):
+			if i==0:
+				label = "queue size"
+			else:
+				label = "max. queue size"
+			plt.plot(results[0], y, label=label)
+	plt.xlabel("time (s)")
+	plt.ylabel("queue length (packets)")
+	plt.legend()
 	appropriate_dir = "/".join(path.split("/")[:-1])+"/"
 	file_name = ".".join(path.split("/")[-1].split(".")[:-1])+".pdf"
-	plt.savefig(appropriate_dir+file_name)
+
+	plt.tight_layout()
+	plt.savefig(appropriate_dir+file_name, bbox_inches = 'tight', pad_inches = 0)
 	# plt.show()
 	plt.close()

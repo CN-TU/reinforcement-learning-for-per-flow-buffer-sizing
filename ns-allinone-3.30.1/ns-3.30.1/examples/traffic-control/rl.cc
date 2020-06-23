@@ -784,6 +784,7 @@ void evaluate (string file_name, string extracted_path, double bw, double delay,
   double average_max_queue_length = -1;
   double average_throughput = -1;
   double reward_total = -1;
+  double max_measured_queue_length = -1;
 
   if (queue_disc_type.compare("RLQueueDisc") == 0) {
     double summed_length = actual_qdisc->GetSummedQueueLength();
@@ -796,48 +797,28 @@ void evaluate (string file_name, string extracted_path, double bw, double delay,
 
 
 
-    // actual_key = queue_disc_type + "/queueTraces/"+actual_key;
-    // auto v = queue_size_results[actual_key];
-    // double alternative_average_queue_length = ((double) (std::accumulate(v.begin(), v.end(), 0)))/v.size();
-    // queue_size_results.erase(actual_key);
-
-
-
-    average_queue_length = summed_length/stopTime;
-
-    // cout << "alternative length " << alternative_average_queue_length << "normal length " << average_queue_length << endl;
-
-
-
-    average_max_queue_length = summed_max_length/stopTime;
-    // average_throughput = sent_bytes/stopTime;
-    average_throughput = ((double) sink1->GetTotalRx())/stopTime;
-
-    // assert (decision != -1);
-    uint32_t inspected = actual_qdisc->GetAlreadyInspected();
-  } else {
-    // std::vector<string> keys;
-    // for(auto kv : queue_size_results) {
-    //   keys.push_back(kv.first);
-    // }
-    // cout << "queue_size_results keys " << keys << endl;
-
     actual_key = queue_disc_type + "/queueTraces/"+actual_key;
-
     auto v = queue_size_results[actual_key];
     average_queue_length = ((double) (std::accumulate(v.begin(), v.end(), 0)))/v.size();
+    max_measured_queue_length = *max_element(v.begin(), v.end());
+    queue_size_results.erase(actual_key);
+    // average_queue_length = summed_length/stopTime;
 
+    average_max_queue_length = summed_max_length/stopTime;
+    average_throughput = ((double) sink1->GetTotalRx())/stopTime;
+
+    uint32_t inspected = actual_qdisc->GetAlreadyInspected();
+  } else {
+
+    actual_key = queue_disc_type + "/queueTraces/"+actual_key;
+    auto v = queue_size_results[actual_key];
+    average_queue_length = ((double) (std::accumulate(v.begin(), v.end(), 0)))/v.size();
+    max_measured_queue_length = *max_element(v.begin(), v.end());
     queue_size_results.erase(actual_key);
 
-    // average_max_queue_length = summed_max_length/stopTime;
     average_throughput = ((double) sink1->GetTotalRx())/stopTime;
 
     if (queue_disc_type.compare("FqCoDelQueueDisc") != 0) {
-
-      // auto type_id = TypeId("ns3::FifoQueueDisc");
-      // TypeId::AttributeInformation info_object;
-      // type_id.LookupAttributeByName("MaxSize", &info_object);
-      // string queue_size_value = (info_object.initialValue)->SerializeToString();
       average_max_queue_length = (queue->GetMaxSize()).GetValue();
     }
   }
@@ -847,11 +828,12 @@ void evaluate (string file_name, string extracted_path, double bw, double delay,
   cout << "average_throughput " << average_throughput << endl;
   cout << "average_queue_length " << average_queue_length << endl;
   cout << "average_max_queue_length " << average_max_queue_length << endl;
+  cout << "max_measured_queue_length " << max_measured_queue_length << endl;
   // cout << "reward_total " << reward_total << endl;
   // cout << "inspected " << inspected << endl;
 
   log_file.open(file_name, fstream::app);
-  log_file << fixed << setprecision(numeric_limits<long double>::digits10 + 1) << bw << ";" << fixed << setprecision(numeric_limits<long double>::digits10 + 1) << delay << ";" << fixed << setprecision(numeric_limits<long double>::digits10 + 1) << average_throughput << ";" << fixed << setprecision(numeric_limits<long double>::digits10 + 1) << average_queue_length << ";" << fixed << setprecision(numeric_limits<long double>::digits10 + 1) << average_max_queue_length << ";" << fixed << setprecision(numeric_limits<long double>::digits10 + 1) << reward_total << endl;
+  log_file << fixed << setprecision(numeric_limits<long double>::digits10 + 1) << bw << ";" << fixed << setprecision(numeric_limits<long double>::digits10 + 1) << delay << ";" << fixed << setprecision(numeric_limits<long double>::digits10 + 1) << average_throughput << ";" << fixed << setprecision(numeric_limits<long double>::digits10 + 1) << average_queue_length << ";" << fixed << setprecision(numeric_limits<long double>::digits10 + 1) << average_max_queue_length << ";" << fixed << setprecision(numeric_limits<long double>::digits10 + 1) << max_measured_queue_length << ";" << fixed << setprecision(numeric_limits<long double>::digits10 + 1) << reward_total << endl;
   log_file.flush();
   log_file.close();
 
@@ -917,11 +899,18 @@ int main (int argc, char **argv)
 
 
     string extracted_path = "normal";
+    int max_queue_length = -1;
     if (argc > 2) {
-      string path = argv[2];
-      torch::load(net, path);
-      extracted_path = path.substr(path.find_last_of("/"), path.length());
-      extracted_path = extracted_path.substr(0, path.find_last_of("."));
+      string second_arg = argv[2];
+      if (queue_disc_type.compare("RLQueueDisc") == 0) {
+        string path = second_arg;
+        torch::load(net, path);
+        extracted_path = path.substr(path.find_last_of("/"), path.length());
+        extracted_path = extracted_path.substr(0, path.find_last_of("."));
+      } else {
+        extracted_path = second_arg;
+        max_queue_length = stoi(second_arg);
+      }
     }
 
     string initial_path_prefix = dir+queue_disc_type+"/logs/";
@@ -936,26 +925,26 @@ int main (int argc, char **argv)
 
       log_file.open(file_name, fstream::out);
 
-      log_file << "bw" << ";" << "delay" << ";" << "average_throughput" << ";" << "average_queue_length" << ";" << "average_max_queue_length" << ";" << "reward" << endl;
+      log_file << "bw" << ";" << "delay" << ";" << "average_throughput" << ";" << "average_queue_length" << ";" << "average_max_queue_length" << ";" << "max_measured_queue_length" << ";" << "reward" << endl;
       log_file.close();
 
       for (size_t j = 0; j < steps; j++) {
         double delay = delay_min+(delay_max-delay_min)/(steps-1)*j;
         cout << "delay " << delay << endl;
-        evaluate(file_name, extracted_path, bw_mean, delay, i,queue_disc_type);
+        evaluate(file_name, extracted_path, bw_mean, delay, i,queue_disc_type,5,max_queue_length);
       }
 
       file_name = dir+queue_disc_type+"/logs/"+extracted_path+"_cc_"+to_string(i)+"_bw"+".out";
 
       log_file.open(file_name, fstream::out);
 
-      log_file << "bw" << ";" << "delay" << ";" << "average_throughput" << ";" << "average_queue_length" << ";" << "average_max_queue_length" << ";" << "reward" << endl;
+      log_file << "bw" << ";" << "delay" << ";" << "average_throughput" << ";" << "average_queue_length" << ";" << "average_max_queue_length" << ";" << "max_measured_queue_length" << ";" << "reward" << endl;
       log_file.close();
 
       for (size_t j = 0; j < steps; j++) {
         double bw = bw_min+(bw_max-bw_min)/(steps-1)*j;
         cout << "bw " << bw << endl;
-        evaluate(file_name, extracted_path, bw, delay_mean, i,queue_disc_type);
+        evaluate(file_name, extracted_path, bw, delay_mean, i,queue_disc_type,5,max_queue_length);
       }
     }
     exit(0);
