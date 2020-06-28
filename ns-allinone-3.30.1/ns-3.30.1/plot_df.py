@@ -79,12 +79,12 @@ for path in paths:
 	fig, ax1 = plt.subplots()
 
 	things = []
-	things += (ax1.plot(x, average_queue_length, label="queue length"))
+	# things += (ax1.plot(x, average_queue_length, label="queue length"))
 	if (np.array(average_max_queue_length) > -1).all():
 		things += (ax1.plot(x, average_max_queue_length, label="max queue length"))
 
-	ax2 = ax1.twinx()
-	things += (ax2.plot(x, average_throughput, label="throughput", color="red"))
+	# ax2 = ax1.twinx()
+	# things += (ax2.plot(x, average_throughput, label="throughput", color="red"))
 
 	appropriate_dir = "/".join(path.split("/")[:-1])+"/plots/"
 	os.makedirs(appropriate_dir, exist_ok=True)
@@ -92,9 +92,9 @@ for path in paths:
 	file_name = ".".join(path.split("/")[-1].split(".")[:-1])+".pdf"
 	ax1.set_xlabel(f"{full_names[relevant_thing]} ({units[relevant_thing]})")
 	ax1.set_ylabel("queue size (packets)")
-	ax2.set_ylabel("throughput (Mbit/s)")
+	# ax2.set_ylabel("throughput (Mbit/s)")
 	ax1.set_ylim(ymin=0)
-	ax2.set_ylim(ymin=0)
+	# ax2.set_ylim(ymin=0)
 	plt.legend(things, [l.get_label() for l in things], loc="lower right")
 	plt.tight_layout()
 	plt.savefig(appropriate_dir+file_name, bbox_inches = 'tight', pad_inches = 0)
@@ -103,4 +103,4 @@ for path in paths:
 for key in aggregate_results:
 	print("key", key)
 	print("avg_throughput", np.mean(np.concatenate(aggregate_results[key]["throughput"])), "avg_queue", np.mean(np.concatenate(aggregate_results[key]["queue"])), "max_queue", np.mean(np.concatenate(aggregate_results[key]["max_queue"])))
-	print([(item, np.mean(aggregate_results[match_for_path]["max_queue_avg_for_cc"][item])) for item in aggregate_results[match_for_path]["max_queue_avg_for_cc"]])
+	print([(item, np.mean(aggregate_results[key]["max_queue_avg_for_cc"][item])) for item in aggregate_results[key]["max_queue_avg_for_cc"]])

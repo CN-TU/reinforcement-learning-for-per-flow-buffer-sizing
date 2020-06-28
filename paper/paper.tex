@@ -1,20 +1,18 @@
-\documentclass[10pt,sigconf,letterpaper,anonymous]{acmart}
+\documentclass[conference]{IEEEtran}
 
 \usepackage[english]{babel}
 \usepackage{blindtext}
-
-%Conference Info
-\acmYear{2020}
-\copyrightyear{2020}
-%\setcopyright{acmcopyright}
-\acmConference{CoNEXT '20}{December 1-4, 2020}{Barcelona, Spain}
-%\acmPrice{TBA}
-%\acmDOI{TBA}
-%\acmISBN{TBA}
+\usepackage{xcolor}
 
 \usepackage[nomain, toc, acronym]{glossaries}
 \usepackage{subfig}
 \usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{multirow}
 
 \newacronym{dl}{DL}{Deep Learning}
 \newacronym{rl}{RL}{Reinforcement Learning}
@@ -27,6 +25,7 @@
 \newacronym{bdp}{BDP}{Bandwidth Delay Product}
 \newacronym{mae}{MAE}{Mean Absolute Error}
 \newacronym{mse}{MSE}{Mean Squared Error}
+\newacronym{qoe}{QoE}{Quality of Experience}
 
 
 
@@ -39,25 +38,15 @@
 \begin{document}
 \title{Online Learning of Per-flow Queuing Policies using Deep Reinforcement Learning}
 
-%\subtitle{Paper \# XXX, XXX pages}
-% \author{Firstname Lastname}
-% \authornote{Note}
-% \orcid{1234-5678-9012}
-% \affiliation{%
-%   \institution{Affiliation}
-%   \streetaddress{Address}
-%   \city{City} 
-%   \state{State} 
-%   \postcode{Zipcode}
-% }
-% \email{email@domain.com}
+\author{\IEEEauthorblockN{Maximilian Bachl, Joachim Fabini, Tanja Zseby}
+\IEEEauthorblockA{Technische Universität Wien\\
+firstname.lastname@tuwien.ac.at}}
 
+\maketitle
 
 \begin{abstract}
 The increasing number of different, incompatible congestion control algorithms has led to an increased deployment of fair queuing. Fair queuing isolates each network flow and gives it a separate queue. It can thus guarantee fairness for each flow even if the flows' congestion controls are not inherently fair. So far, each queue in the fair queuing system either has a fixed, static maximum size or is managed by an Active Queue Management algorithm (AQM) like CoDel. In this paper we design and implement an AQM mechanism that dynamically learns the optimal buffer size for each flow with respect to a specified utility function. We show that our Deep Learning based algorithm can correctly fingerprint each flow and assign the optimal queue size. Besides that we also show that our mechanism can even learn completely on-line and can continuously adapt. Finally we demonstrate that the computational overhead of our approach is sufficiently low to allow for deployment on regular hardware. 
 \end{abstract}
-
-\maketitle
 
 \section{Introduction}
 
@@ -153,33 +142,33 @@ During deployment, the trained neural network is used but the experiment step is
 \label{fig:offlineTraining}
 \end{figure}
 
-%\begin{figure*}[h]
-%\centering
-%\subfloat[New Reno, varying bandwidth.\label{fig:SmallAlphaNewRenoBandwidth}
-%]{
-%\includegraphics[width=0.98\columnwidth]{{"../ns-allinone-3.30.1/ns-3.30.1/results/RLQueueDisc/logs/plots/2020-6-6-10-24-18_81000.weights_New Reno_bandwidth"}.pdf}
-%}{}
-%\subfloat[New Reno, varying delay.\label{fig:SmallAlphaNewRenoDelay}
-%]{
-%\includegraphics[width=0.98\columnwidth]{{"../ns-allinone-3.30.1/ns-3.30.1/results/RLQueueDisc/logs/plots/2020-6-6-10-24-18_81000.weights_New Reno_delay"}.pdf}
-%}{}
-%\subfloat[BIC, varying bandwidth\label{fig:SmallAlphaBicBandwidth}
-%]{
-%\includegraphics[width=0.98\columnwidth]{{"../ns-allinone-3.30.1/ns-3.30.1/results/RLQueueDisc/logs/plots/2020-6-6-10-24-18_81000.weights_Bic_bandwidth"}.pdf}
-%}{}
-%\subfloat[BIC, varying delay\label{fig:SmallAlphaBicDelay}
-%]{
-%\includegraphics[width=0.98\columnwidth]{{"../ns-allinone-3.30.1/ns-3.30.1/results/RLQueueDisc/logs/plots/2020-6-6-10-24-18_81000.weights_Bic_delay"}.pdf}
-%}{}
-%\caption{Change of the buffer size after offline learning when varying bandwidth/delay/\gls{cca}, keeping the other parameters constant at their mean. \todo{Smaller margin for figures.}}
-%\label{fig:offlineSmallAlpha}
-%\end{figure*}
+\begin{figure*}[h]
+\centering
+\subfloat[New Reno, varying bandwidth.\label{fig:SmallAlphaNewRenoBandwidth}
+]{
+\includegraphics[width=0.98\columnwidth]{{"../ns-allinone-3.30.1/ns-3.30.1/results/RLQueueDisc/logs/plots/2020-6-6-10-24-18_81000.weights_New Reno_bandwidth"}.pdf}
+}{}
+\subfloat[New Reno, varying delay.\label{fig:SmallAlphaNewRenoDelay}
+]{
+\includegraphics[width=0.98\columnwidth]{{"../ns-allinone-3.30.1/ns-3.30.1/results/RLQueueDisc/logs/plots/2020-6-6-10-24-18_81000.weights_New Reno_delay"}.pdf}
+}{}
+\subfloat[BIC, varying bandwidth\label{fig:SmallAlphaBicBandwidth}
+]{
+\includegraphics[width=0.98\columnwidth]{{"../ns-allinone-3.30.1/ns-3.30.1/results/RLQueueDisc/logs/plots/2020-6-6-10-24-18_81000.weights_Bic_bandwidth"}.pdf}
+}{}
+\subfloat[BIC, varying delay\label{fig:SmallAlphaBicDelay}
+]{
+\includegraphics[width=0.98\columnwidth]{{"../ns-allinone-3.30.1/ns-3.30.1/results/RLQueueDisc/logs/plots/2020-6-6-10-24-18_81000.weights_Bic_delay"}.pdf}
+}{}
+\caption{Change of the buffer size after offline learning when varying bandwidth/delay/\gls{cca}, keeping the other parameters constant at their mean. }
+\label{fig:offlineSmallAlpha}
+\end{figure*}
 
 When performing offline learning with the tradeoff parameter $\alpha=0.01$ (\autoref{fig:offlineTraining}), the neural network first starts with a prediction that is close to 0 (due to the initialization of neural network weights). During the first couple of thousand training flows, it increases its output and approaches what appears to be the buffer size that works best on average (slightly higher than 15). Then the neural network starts differentiating different flow and learn custom policies for them. After around 250000 flows, the output appears to be stable and doesn't change anymore. There's one noticeable outlier at around 120000 flows. This appears to be some instability that can commonly occur in the early stages of neural network training. 
 
 \begin{figure}[h]
 \includegraphics[width=\columnwidth]{{"../ns-allinone-3.30.1/ns-3.30.1/results/RLQueueDisc/queueTraces/2020-6-6-10-24-18_81000.weights/cc_0_bw_25.000000_delay_15.000000"}.pdf}
-\caption{Showing the maximum queue length and queue length of a New Reno flow controlled by \gls{ours} at the bottleneck with a 25\,Mbit/s link and a delay of 15\,ms. The queue never becomes empty and also never forms a standing queue.}
+\caption{Showing the maximum queue length and queue length of a New Reno flow controlled by \gls{ours} ($\alpha=0.01$) at the bottleneck with a 25\,Mbit/s link and a delay of 15\,ms. The queue never becomes empty and also never forms a standing queue.}
 \label{fig:exampleRenoLargeBw}
 \end{figure}
 
@@ -187,7 +176,7 @@ When performing offline learning with the tradeoff parameter $\alpha=0.01$ (\aut
 
 \begin{figure}[h]
 \includegraphics[width=\columnwidth]{{"../ns-allinone-3.30.1/ns-3.30.1/results/RLQueueDisc/queueTraces/2020-6-6-10-24-18_81000.weights/cc_0_bw_6.010101_delay_15.000000"}.pdf}
-\caption{Showing the maximum queue length and queue length of a New Reno flow controlled by \gls{ours} at the bottleneck with a 6\,Mbit/s link and a delay of 15\,ms. The queue never becomes empty and also never forms a standing queue.}
+\caption{Showing the maximum queue length and queue length of a New Reno flow controlled by \gls{ours} ($\alpha=0.01$) at the bottleneck with a 6\,Mbit/s link and a delay of 15\,ms. The queue never becomes empty and also never forms a standing queue.}
 \label{fig:exampleRenoSmallBw}
 \end{figure}
 
@@ -195,7 +184,7 @@ When performing offline learning with the tradeoff parameter $\alpha=0.01$ (\aut
 
 \begin{figure}[h]
 \includegraphics[width=\columnwidth]{{"../ns-allinone-3.30.1/ns-3.30.1/results/RLQueueDisc/queueTraces/2020-6-6-10-24-18_81000.weights/cc_1_bw_25.000000_delay_15.000000"}.pdf}
-\caption{Showing the maximum queue length and queue length of a BIC flow controlled by \gls{ours} at the bottleneck with a 25\,Mbit/s link and a delay of 15\,ms. The queue never becomes empty and also never forms a standing queue.}
+\caption{Showing the maximum queue length and queue length of a BIC flow controlled by \gls{ours} ($\alpha=0.01$) at the bottleneck with a 25\,Mbit/s link and a delay of 15\,ms. The queue never becomes empty and also never forms a standing queue.}
 \label{fig:exampleBicLargeBw}
 \end{figure}
 
@@ -242,6 +231,14 @@ Finally, since BIC has a different multiplicative decrease factor than New Reno 
 \end{figure}
 
 \autoref{fig:offlineTrainingLargeAlpha} shows that also for the larger $\alpha$, the neural network outputs converge quickly after a couple of 10000 flows. 
+
+\begin{figure}[h]
+\includegraphics[width=\columnwidth]{{"../ns-allinone-3.30.1/ns-3.30.1/results/RLQueueDisc/queueTraces/2020-6-4-15-39-25_108000.weights/cc_0_bw_6.010101_delay_15.000000"}.pdf}
+\caption{Showing the maximum queue length and queue length of a New Reno flow controlled by \gls{ours} ($\alpha=10$) at the bottleneck with a 6\,Mbit/s link and a delay of 15\,ms. The queue never becomes empty and also never forms a standing queue.}
+\label{fig:exampleRenoSmallBwLargeAlpha}
+\end{figure}
+
+\autoref{fig:exampleRenoSmallBwLargeAlpha} shows a flow under the same conditions like the one in \autoref{fig:exampleRenoSmallBw}. The flow in \autoref{fig:exampleRenoSmallBwLargeAlpha} however, has a smaller buffer and sometimes the queue become empty, which never happens for the flow in \autoref{fig:exampleRenoSmallBw}. This shows that the parameter $\alpha$ has a clear influence on the learning process and that with a larger $\alpha$, throughput is sacrificed to keep the queue smaller. 
 
 \begin{table}[h]
 \caption{Correlation between bandwidth/delay of the link and output buffer size for a tradeoff of $10$ with offline learning. We vary bandwidth between 5 and 25\,Mbit/s and delay between 5 and 25\,ms for both \glspl{cca}. When bandwidth is varied, delay is kept at its mean (15\,ms) and vice versa.} \label{tab:corrOfflineLargeAlpha}
@@ -330,7 +327,7 @@ BIC & 8 \\
 
 \begin{figure}[h]
 \includegraphics[width=\columnwidth]{{"../ns-allinone-3.30.1/ns-3.30.1/results/RLQueueDisc/queueTraces/2020-6-6-10-24-18_81000.weights/cc_1_bw_15.000000_delay_5.000000"}.pdf}
-\caption{Showing the maximum queue length and queue length of a BIC flow controlled by \gls{ours} at the bottleneck with a 15\,Mbit/s link and a delay of 5\,ms. The queue never becomes empty and also never forms a standing queue.}
+\caption{Showing the maximum queue length and queue length of a BIC flow controlled by \gls{ours} ($\alpha=0.01$) at the bottleneck with a 15\,Mbit/s link and a delay of 5\,ms. The queue never becomes empty and also never forms a standing queue.}
 \label{fig:exampleBicOursNice}
 \end{figure}
 
@@ -352,9 +349,48 @@ BIC & 8 \\
 \label{fig:exampleBicFqCoDel}
 \end{figure}
 
+\begin{table}
+\caption{Comparing the average throughput and maximum/average queue size over a large range of network conditions for New Reno and Bic. All results are the average of 100 experiments with delay ranging from 5 to 25\,ms (with bandwidth fixed at 15\,Mbit/s and of 100 experiments with bandwidth ranging from 5 to 25\,Mbit/s (with bandwidth fixed at 15\,ms). All experiments were conducted for both the New Reno and Bic \glspl{cca}. This gives a total of 400 experiments, over which the values are averaged.} \label{tab:comparison_others}
+\centering
+\begin{tabular}{l r r r} \toprule
+& \multirow{2}{*}{avg. throughp.} & \multicolumn{2}{c}{queue size} \\
+& & max. & avg. \\ \midrule
+\gls{ours}, offline $\alpha=0.01$ & 13.4 & 23.9 & 7.7\\
+\gls{ours}, offline $\alpha=10$ & 12.5 & 12.7 & 3.4\\
+\gls{ours}, online $\alpha=0.01$ & 12.8 & 16.1 & 4.5\\
+FqCoDel	& 13.7 & 155.4 & 15.4\\
+Fifo 100	& 11.7 & 100 & 51.1\\
+Fifo 1000	& 11.9 & 1000 & 630.4 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+%\begin{table}
+%\caption{Comparing the average throughput and maximum/average queue size over a large range of network conditions for New Reno and Bic. All results are the average of 100 experiments with delay ranging from 5 to 25\,ms (with bandwidth fixed at 15\,Mbit/s and of 100 experiments with bandwidth ranging from 5 to 25\,Mbit/s (with bandwidth fixed at 15\,ms). All experiments were conducted for both the New Reno and Bic \glspl{cca}. This gives a total of 400 experiments, over which the values are averaged.} \label{tab:comparison_others}
+%\centering
+%\begin{tabular}{r r r r r} \toprule
+%& \gls{ours} & FqCoDel & Fifo 100 & Fifo 1000 \\
+%\midrule
+%avg.~throughput & 13.4 & \textbf{13.7} & 11.7 & 11.9 \\
+%avg.~queue & \textbf{7.7} & 15.4 & 51.1 & 630.4 \\
+%max.~queue & \textbf{23.9} & 155.4 & 100 & 1000 \\
+%\bottomrule
+%\end{tabular}
+%\end{table}
+
 \section{Discussion}
 
-\bibliographystyle{ACM-Reference-Format}
+The results show that \gls{ours} learns the optimal buffering behavior taking into account the tradeoff parameter $\alpha$. This allows to tune how much throughput is allowed to be sacrificed for a reduction of average queue size. The offline learning worked comparable to the online learning, however, it can take significantly longer to converge. This is no surprise as for offline learning we can do A/B testing between buffer sizing and thus always know what was the optimal buffer size. On the other side, for online learning, the learning depends on the output of a second neural network (the critic). This adds additional noise to the learning process. A way to alleviate this could be to pre-train a model using offline learning and then refine this pretrained model with online learning in live deployment. 
+
+Our comparison to existing \gls{aqm} methods shows that \gls{ours} achieves more or about the same throughput as other existing methods while at least halving the average queue size. The maximum queue size is decreased even more sharply: It is less than one fourth of the one of Fifo with a queue of 100 and less than a sixth of the maximum queue of FqCoDel. This observation is somewhat surprising as FqCoDel is specifically designed to prevent unnecessary, long queues. However, while CoDel's algorithm manages to work reasonably well for flows in the congestion avoidance phase, it interacts badly with flows in the slow start phase. This is because during slow start, most \glspl{cca} increase the data in flight exponentially, which leads to a very quick increase in the queue. The problem is that CoDel uses an interval of 100\,ms to adjust the queue. Thus, slow start has 100\,ms to grow the queue exponentially and arbitrarily high. Only after that CoDel starts gradually decreasing the queue. This is particularly problematic as a large fraction of flows already end before slow start is over \cite{jurkiewicz_flow_2020} and thus could suffer from FqCoDel's large queue size. For example, for the average maximum queue size of 155 packets of FqCoDel shown in \autoref{tab:comparison_others} this means that on a 15\,Mbit/s link, the queuing delay alone is 124\,ms. 
+
+As our \gls{dl} system's features are only composed of exponentially weighted moving averages, little storage space is required by \gls{ours}. To be able to adjust the computational demand of \gls{ours}, it has the option to only execute the \gls{rl} logic every $n$th packet.
+
+We envision \gls{ours} being used on switches and routers close to the Internet's edge, as here usually the bottleneck links are and because devices here only have to manage a rather small number of flows compared to the Internet's core. 
+
+An interesting future direction of work could be to envision different utility functions, for example directly based on \gls{qoe}. 
+
+\bibliographystyle{IEEEtranS}
 \bibliography{reference}
 
 \end{document}

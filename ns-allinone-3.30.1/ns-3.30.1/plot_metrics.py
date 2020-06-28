@@ -54,9 +54,9 @@ for col in extracted_data.keys():
 	# plt.grid(True)
 	plt.tight_layout()
 	if max_x < float("inf"):
-		plt.xlim(0,min(max_x+1, np.max(x)))
+		plt.xlim(0,min(max_x, np.max(x)))
 	if max_y < float("inf"):
-		plt.ylim(0,min(max_y+1, np.max(data)))
+		plt.ylim(0,min(max_y, np.max(data)))
 	plt.xlabel("millions of training flows")
 	plt.ylabel(col)
 	plt.legend(loc="upper right")
