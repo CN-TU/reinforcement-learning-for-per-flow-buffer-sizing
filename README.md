@@ -19,7 +19,7 @@ Contact: Maximilian Bachl
 
 If the build finished successfully (this can take some time), you can train a model. 
 
-Assuming you're in the ```ns-3.30.1``` folder, run 
+Assuming you're in the ```ns-3.30.1``` directory, run 
 
     OMP_NUM_THREADS=1 LD_LIBRARY_PATH=../../libtorch/lib:$LD_LIBRARY_PATH ./waf -v --run "examples/traffic-control/rl"
     
