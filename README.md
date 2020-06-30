@@ -15,7 +15,7 @@ Contact: Maximilian Bachl
 * ```./waf configure```
 * ```./waf build```
 
-## Training an RL model
+# Training an RL model
 
 If the build finished successfully (this can take some time), you can train a model. 
 
@@ -23,6 +23,8 @@ Assuming you're in the ```ns-3.30.1``` folder, run
 
     OMP_NUM_THREADS=1 LD_LIBRARY_PATH=../../libtorch/lib:$LD_LIBRARY_PATH ./waf -v --run "examples/traffic-control/rl"
     
+# Evaluating
+
 ## Evaluating an RL model
 
 To evaluate a set of trained weights run 
@@ -39,8 +41,8 @@ To run Fifo with a maximum queue size of 100, run
 
         OMP_NUM_THREADS=1 LD_LIBRARY_PATH=../../libtorch/lib:$LD_LIBRARY_PATH ./waf -v --run "examples/traffic-control/rl FifoQueueDisc 100"
         
-## Plotting
+# Plotting
 
-### Plotting training runs
+## Plotting training runs
 
-### Plotting evaluation results
+## Plotting evaluation results
