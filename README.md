@@ -45,4 +45,20 @@ To run Fifo with a maximum queue size of 100, run
 
 ## Plotting training runs
 
+During training, various values are logged.
+
+To plot them, run the following command:
+
+    ./plot_metrics.py results/RLQueueDisc/logs/<name_of_the_file_to_be_plotted>
+
 ## Plotting evaluation results
+
+The following commands are supposed to be run after an AQM mechanism was evaluated. 
+
+To plot, for example, all queue traces produced by an evaluation of Fifo with queue size 1000, run the following command:
+
+    ls -d $PWD/results/FifoQueueDisc/queueTraces/1000/*.plotme | xargs ./plot_something.py
+    
+To plot the behavior of an AQM mechanism and get performance metrics, run, for example, the following command:
+
+    ./plot_df.py results/RLQueueDisc/logs/*
