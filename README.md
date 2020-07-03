@@ -5,7 +5,7 @@ Contact: Maximilian Bachl
 
 ## Downloading libtorch
 
-* Download the [C++ version of libtorch for CPUs](https://download.pytorch.org/libtorch/cpu/libtorch-shared-with-deps-1.5.1%2Bcpu.zip)
+* Download the [C++ version of libtorch for CPUs](https://download.pytorch.org/libtorch/cpu/libtorch-shared-with-deps-1.5.1%2Bcpu.zip). If you want to download a newer version, make sure that it is the *Pre-cxx11 ABI* version. Otherwise you'll have to change some flags in the build process. 
 * Unpack it and move the contained directory ```libtorch``` to the root directory of this repository (the same directory in which there's the ```ns-allinone-3.30.1``` directory)
 
 ## Compiling
