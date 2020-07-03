@@ -62,3 +62,7 @@ To plot, for example, all queue traces produced by an evaluation of Fifo with qu
 To plot the behavior of an AQM mechanism and get performance metrics, run, for example, the following command:
 
     ./plot_df.py results/RLQueueDisc/logs/*
+
+# Pre-trained weights
+
+All weights that are used to generate the plots in the paper can be found in the directory ```reinforcement-learning-for-per-flow-buffer-sizing/ns-allinone-3.30.1/ns-3.30.1/results/RLQueueDisc/weights```.
