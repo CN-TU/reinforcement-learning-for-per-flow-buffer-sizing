@@ -1,6 +1,8 @@
 # reinforcement-learning-for-per-flow-buffer-sizing
 Contact: Maximilian Bachl
 
+The code was run on *Debian 10 (buster)* on Linux kernel ```4.19.0-9-amd64``` with g++ ```8.3.0```. 
+
 # Installation
 
 ## Downloading libtorch
