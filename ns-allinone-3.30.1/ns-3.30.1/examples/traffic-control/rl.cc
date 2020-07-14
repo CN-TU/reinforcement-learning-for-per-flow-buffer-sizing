@@ -48,9 +48,9 @@ const bool ACTOR_CRITIC = true;
 double LR = 0.01;
 // The tradeoff
 double alpha = 10.0;
-// The number of processes to use.
-// Should be NCPU/2 for offline learning and NCPU for online learning.
-const int nproc = 40;
+// The number of processes to use. Should not be higher than the number of CPUs you have.
+// The division is so that for offline training, the number of processes is half the number of CPUs. This is because for offline training, each process forks and thus there are two times as many processes.
+const int nproc = 40 / (2-ACTOR_CRITIC);
 // How ofter the RL logic works.
 // 10 means that at every 10th packet that is received, a decision (optimal buffer size) is made.
 uint32_t every_nth = 10;
