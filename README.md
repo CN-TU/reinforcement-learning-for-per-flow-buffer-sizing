@@ -25,6 +25,8 @@ Assuming you're in the ```ns-3.30.1``` directory, run
 
     OMP_NUM_THREADS=1 LD_LIBRARY_PATH=../../libtorch/lib:$LD_LIBRARY_PATH ./waf -v --run "examples/traffic-control/rl"
     
+To change parameters like the number of cpus to use for training, the tradeoff parameter alpha etc., change the variables on top of the file ```ns-allinone-3.30.1/ns-3.30.1/examples/traffic-control/rl.cc``` and recompile. 
+    
 # Evaluating
 
 ## Evaluating an RL model
