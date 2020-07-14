@@ -42,10 +42,18 @@
 #include <semaphore.h>
 #include <random>
 
+// If true, do online learning, otherwise offline learning
 const bool ACTOR_CRITIC = true;
+// Learning rate. 0.01 worked well.
 double LR = 0.01;
+// The tradeoff
 double alpha = 10.0;
+// The number of processes to use.
+// Should be NCPU/2 for offline learning and NCPU for online learning.
 const int nproc = 40;
+// How ofter the RL logic works.
+// 10 means that at every 10th packet that is received, a decision (optimal buffer size) is made.
+uint32_t every_nth = 10;
 
 using namespace std;
 using namespace ns3;
@@ -60,12 +68,10 @@ auto net_reward = make_shared<RlNetReward>();
 #define CC_LOWER 0
 #define CC_UPPER 1
 
-
 double reward_normalizer = 1000000;
 // double queue_normalizer = 10;
 
 uint32_t mtu = 1446;
-uint32_t every_nth = 10;
 uint64_t iteration = 0;
 double queue_sampling_interval = 0.001;
 ofstream output;
