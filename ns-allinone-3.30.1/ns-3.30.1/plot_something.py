@@ -13,6 +13,7 @@ for path in paths:
 	tuples = [[float(subitem) for subitem in item.split(" ")] for item in lines]
 	results = list(zip(*tuples))
 	ys = results[1:]
+	plt.figure(figsize=(5,2))
 	for i, y in enumerate(ys):
 		# print("i", i, "y", y)
 		# if i > 0:
