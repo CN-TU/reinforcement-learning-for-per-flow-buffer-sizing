@@ -4,51 +4,36 @@
 	url = {https://tools.ietf.org/html/rfc8290},
 	language = {en},
 	urldate = {2019-10-11},
-	author = {Taht, D. and Gettys, Jim and Hoeiland-Joergensen, T. and Hoeiland-Joergensen, Toke and Dumazet, Eric and Gettys, J. and Dumazet, E. and McKenney, P.},
+	author = {Taht, D. and Hoeiland-Joergensen, T. and Gettys, J. and Dumazet, E. and McKenney, P.},
 	year = {2018},
 	file = {Snapshot:/home/max/.zotero/zotero/zzt443zn.default/zotero/storage/FNJA66W6/rfc8290.html:text/html}
 }
 
 @article{nichols_controlling_2012,
 	title = {Controlling {Queue} {Delay}},
-	volume = {10},
-	issn = {1542-7730},
 	abstract = {A modern AQM is just one piece of the solution to bufferbloat.},
-	number = {5},
 	urldate = {2019-10-11},
 	journal = {Queue},
 	author = {Nichols, Kathleen and Jacobson, Van},
-	month = may,
 	year = {2012},
-	pages = {20:20--20:34},
 	file = {ACM Full Text PDF:/home/max/.zotero/zotero/zzt443zn.default/zotero/storage/2FVMF4WS/Nichols and Jacobson - 2012 - Controlling Queue Delay.pdf:application/pdf}
 }
 
 @article{cardwell_bbr:_2016,
 	title = {{BBR}: {Congestion}-{Based} {Congestion} {Control}},
-	volume = {14, September-October},
-	shorttitle = {{BBR}},
 	urldate = {2019-10-11},
 	journal = {ACM Queue},
 	author = {Cardwell, Neal and Cheng, Yuchung and Gunn, C. Stephen and Yeganeh, Soheil Hassas and Jacobson, Van},
-	year = {2016},
-	pages = {20 -- 53}
+	year = {2016}
 }
 
 @article{ha_cubic:_2008,
 	title = {{CUBIC}: a new {TCP}-friendly high-speed {TCP} variant},
-	volume = {42},
-	issn = {01635980},
-	shorttitle = {{CUBIC}},
-	abstract = {CUBIC is a congestion control protocol for TCP (transmission control protocol) and the current default TCP algorithm in Linux. The protocol modiﬁes the linear window growth function of existing TCP standards to be a cubic function in order to improve the scalability of TCP over fast and long distance networks. It also achieves more equitable bandwidth allocations among ﬂows with diﬀerent RTTs (round trip times) by making the window growth to be independent of RTT – thus those ﬂows grow their congestion window at the same rate. During steady state, CUBIC increases the window size aggressively when the window is far from the saturation point, and the slowly when it is close to the saturation point. This feature allows CUBIC to be very scalable when the bandwidth and delay product of the network is large, and at the same time, be highly stable and also fair to standard TCP ﬂows. The implementation of CUBIC in Linux has gone through several upgrades. This paper documents its design, implementation, performance and evolution as the default TCP algorithm of Linux.},
-	language = {en},
-	number = {5},
+	abstract = {CUBIC is a congestion control protocol for TCP (transmission control protocol) and the current default TCP algorithm in Linux. The protocol modifies the linear window growth function of existing TCP standards to be a cubic function in order to improve the scalability of TCP over fast and long distance networks. It also achieves more equitable bandwidth allocations among flows with different RTTs (round trip times) by making the window growth to be independent of RTT {\textendash} thus those flows grow their congestion window at the same rate. During steady state, CUBIC increases the window size aggressively when the window is far from the saturation point, and the slowly when it is close to the saturation point. This feature allows CUBIC to be very scalable when the bandwidth and delay product of the network is large, and at the same time, be highly stable and also fair to standard TCP flows. The implementation of CUBIC in Linux has gone through several upgrades. This paper documents its design, implementation, performance and evolution as the default TCP algorithm of Linux.},
 	urldate = {2019-10-11},
 	journal = {ACM SIGOPS Operating Systems Review},
 	author = {Ha, Sangtae and Rhee, Injong and Xu, Lisong},
-	month = jul,
 	year = {2008},
-	pages = {64--74},
 	file = {Ha et al. - 2008 - CUBIC a new TCP-friendly high-speed TCP variant.pdf:/home/max/.zotero/zotero/zzt443zn.default/zotero/storage/KZ4Z69S2/Ha et al. - 2008 - CUBIC a new TCP-friendly high-speed TCP variant.pdf:application/pdf}
 }
 
@@ -66,7 +51,7 @@
 	url = {https://tools.ietf.org/html/draft-ietf-quic-spin-exp-01},
 	language = {en},
 	urldate = {2019-10-11},
-	author = {Kühlewind, Mirja and Trammell, Brian},
+	author = {K{\"u}hlewind, Mirja and Trammell, Brian},
 	year = {2018},
 	file = {Snapshot:/home/max/.zotero/zotero/zzt443zn.default/zotero/storage/YN93XHX3/draft-ietf-quic-spin-exp-01.html:text/html}
 }
@@ -84,12 +69,10 @@
 @inproceedings{bless_policy-oriented_2018,
 	title = {Policy-oriented {AQM} {Steering}},
 	abstract = {Detecting and handling network congestion in the Internet has, again, become a vital area of research. The provisioning of low latency together with high throughput is of particular interest due to the current mix of applications running in the Internet. Active Queue Management (AQM) mechanisms come with the promise of reducing queuing delays. They, however, may adversely affect throughput and network utilization and have proven to be difficult to configure. More recent AQMs, such as CoDel, PIE, and GSP are easier to configure but work with a fixed target delay setpoint. Depending on the traffic the same setpoint value can result either in unnecessary large delays or under-utilization of the link. Policy-oriented AQM Steering automatically adapts the target delay setpoint to the current traffic situation, in order to fulfill a given quality-of-service policy. Such a policy consists of a utilization goal and an upper delay bound. This improves AQM performance with varying traffic situations and makes the impact of deploying an AQM predictable. A prototypical implementation of AQM Steering for GSP showed its performance advantages compared to static AQM variants at speeds of 10 Gbit/s and 1 Gbit/s.},
-	booktitle = {2018 {IFIP} {Networking} {Conference} ({IFIP} {Networking}) and {Workshops}},
+	booktitle = {{IFIP} {Networking}},
 	author = {Bless, Roland and Hock, Mario and Zitterbart, Martina},
-	month = may,
 	year = {2018},
-	keywords = {Throughput, Bandwidth, Delays, Internet, network congestion, Active Queue Management mechanisms, CoDel, fixed target delay setpoint, GSP, network utilization, Packet loss, PIE, policy-oriented AQM Steering, quality of service, quality-of-service policy, queueing theory, queuing delays, static AQM variants, synchronisation, telecommunication network management, traffic situation, Upper bound},
-	pages = {1--9},
+	keywords = {Active Queue Management mechanisms, Bandwidth, CoDel, Delays, fixed target delay setpoint, GSP, Internet, network congestion, network utilization, Packet loss, PIE, policy-oriented AQM Steering, quality of service, quality-of-service policy, queueing theory, queuing delays, static AQM variants, synchronisation, telecommunication network management, Throughput, traffic situation, Upper bound},
 	file = {IEEE Xplore Abstract Record:/home/max/.zotero/zotero/zzt443zn.default/zotero/storage/RLFMJX3W/8696627.html:text/html;IEEE Xplore Full Text PDF:/home/max/.zotero/zotero/zzt443zn.default/zotero/storage/3VSPBH8H/Bless et al. - 2018 - Policy-oriented AQM Steering.pdf:application/pdf}
 }
 
@@ -103,96 +86,70 @@
 
 @article{bisoy_aqm_2018,
 	title = {An {AQM} {Controller} {Based} on {Feed}-{Forward} {Neural} {Networks} for {Stable} {Internet}},
-	volume = {43},
-	issn = {2193-567X, 2191-4281},
-	url = {http://link.springer.com/10.1007/s13369-017-2767-9},
-	doi = {10.1007/s13369-017-2767-9},
-	abstract = {As the nature of Internet becomes nonlinear and complex, designing an intelligent controller at the router which can learn the trafﬁc pattern of the network and predict the correct value and stabilize the system is a difﬁcult task. In this, a new active queue management (AQM) controller is proposed based on feed-forward neural network called (FFNN-AQM) to control the network congestion efﬁciently by stabilizing the queue length. It learns the trafﬁc pattern of the nonlinear and dynamic network and predicts the future value of current queue length. The parameters of neurons adjusted depending on the time-varying environment to stabilize the queue length. The NS2 network simulator is used to analyze the performance of FFNN-AQM along with existing techniques. The simulation experiment results demonstrate that FFNN-AQM is stable and achieve faster convergence with small settling time in varying network conditions. The proposed controller outperforms existing AQM proportional integral (PI), intelligent adaptive PI and neural network PI techniques.},
+	abstract = {As the nature of Internet becomes nonlinear and complex, designing an intelligent controller at the router which can learn the traffic pattern of the network and predict the correct value and stabilize the system is a difficult task. In this, a new active queue management (AQM) controller is proposed based on feed-forward neural network called (FFNN-AQM) to control the network congestion efficiently by stabilizing the queue length. It learns the traffic pattern of the nonlinear and dynamic network and predicts the future value of current queue length. The parameters of neurons adjusted depending on the time-varying environment to stabilize the queue length. The NS2 network simulator is used to analyze the performance of FFNN-AQM along with existing techniques. The simulation experiment results demonstrate that FFNN-AQM is stable and achieve faster convergence with small settling time in varying network conditions. The proposed controller outperforms existing AQM proportional integral (PI), intelligent adaptive PI and neural network PI techniques.},
 	language = {en},
-	number = {8},
 	urldate = {2020-02-14},
 	journal = {Arabian Journal for Science and Engineering},
 	author = {Bisoy, Sukant Kishoro and Pattnaik, Prasant Kumar},
 	month = aug,
 	year = {2018},
-	pages = {3993--4004},
 	file = {Bisoy and Pattnaik - 2018 - An AQM Controller Based on Feed-Forward Neural Net.pdf:/home/max/.zotero/zotero/zzt443zn.default/zotero/storage/8DEBKQFM/Bisoy and Pattnaik - 2018 - An AQM Controller Based on Feed-Forward Neural Net.pdf:application/pdf}
 }
 
 @inproceedings{bachl_cocoa_2019,
-	address = {Palo Alto, CA, USA},
-	series = {{BS} '19},
 	title = {Cocoa: {Congestion} {Control} {Aware} {Queuing}},
-	isbn = {978-1-4503-7745-4},
-	shorttitle = {Cocoa},
-	url = {https://doi.org/10.1145/3375235.3375236},
-	doi = {10.1145/3375235.3375236},
 	abstract = {Recent model-based congestion control algorithms such as BBR use repeated measurements at the endpoint to build a model of the network connection and use it to achieve optimal throughput with low queuing delay. Conversely, applying this model-based approach to Active Queue Management (AQM) has so far received less attention. We propose the new AQM scheduler cocoa based on fair queuing, which adapts the buffer size depending on the needs of each flow without requiring active participation from the endpoint. We implement this scheduler for the Linux kernel and show that it interacts well with the most common congestion control algorithms and can significantly increase throughput compared to fair CoDel while avoiding overbuffering.},
 	urldate = {2020-06-05},
-	booktitle = {Proceedings of the 2019 {Workshop} on {Buffer} {Sizing}},
-	publisher = {Association for Computing Machinery},
+	booktitle = {Workshop on {Buffer} {Sizing}},
+	publisher = {ACM},
 	author = {Bachl, Maximilian and Fabini, Joachim and Zseby, Tanja},
-	month = dec,
 	year = {2019},
-	pages = {1--7},
 	file = {Full Text PDF:/home/max/.zotero/zotero/zzt443zn.default/zotero/storage/I3EDPF9V/Bachl et al. - 2019 - Cocoa Congestion Control Aware Queuing.pdf:application/pdf}
 }
 
 @inproceedings{lin_kemy_2015,
 	title = {Kemy: {An} {AQM} generator based on machine learning},
-	booktitle = {2015 10th {International} {Conference} on {Communications} and {Networking} in {China} ({ChinaCom})},
+	booktitle = {{ChinaCom}},
 	publisher = {IEEE},
 	author = {Lin, XinAn and Zhang, Dong},
-	year = {2015},
-	pages = {556--561}
+	year = {2015}
 }
 
 @inproceedings{bachl_rax_2019,
 	title = {Rax: {Deep} {Reinforcement} {Learning} for {Congestion} {Control}},
-	booktitle = {{ICC} 2019-2019 {IEEE} {International} {Conference} on {Communications} ({ICC})},
+	booktitle = {{ICC}},
 	publisher = {IEEE},
 	author = {Bachl, Maximilian and Zseby, Tanja and Fabini, Joachim},
-	year = {2019},
-	pages = {1--6}
+	year = {2019}
 }
 
 @inproceedings{hock_experimental_2017,
 	title = {Experimental evaluation of {BBR} congestion control},
-	doi = {10.1109/ICNP.2017.8117540},
 	abstract = {BBR is a recently proposed congestion control. Instead of using packet loss as congestion signal, like many currently used congestion controls, it uses an estimate of the available bottleneck link bandwidth to determine its sending rate. BBR tries to provide high link utilization while avoiding to create queues in bottleneck buffers. The original publication of BBR shows that it can deliver superior performance compared to Cubic TCP in some environments. This paper provides an independent and extensive experimental evaluation of BBR at higher speeds. The experimental setup uses BBR's Linux kernel 4.9 implementation and typical data rates of 10Gbit/s and 1 Gbit/s at the bottleneck link. The experiments vary the flows' round-trip times, the number of flows, and buffer sizes at the bottleneck. The evaluation considers throughput, queuing delay, packet loss, and fairness. On the one hand, the intended behavior of BBR could be observed with our experiments. On the other hand, some severe inherent issues such as increased queuing delays, unfairness, and massive packet loss were also detected. The paper provides an in-depth discussion of BBR's behavior in different experiment setups.},
-	booktitle = {2017 {IEEE} 25th {International} {Conference} on {Network} {Protocols} ({ICNP})},
+	booktitle = {{ICNP}},
 	author = {Hock, Mario and Bless, Roland and Zitterbart, Martina},
-	month = oct,
 	year = {2017},
-	keywords = {Throughput, Bandwidth, Delays, Internet, Linux, telecommunication congestion control, Packet loss, queueing theory, available bottleneck link bandwidth, BBR behavior, BBR congestion control, BBR Linux kernel 4.9 implementation, bit rate 1.0 Gbit/s, bit rate 10.0 Gbit/s, bottleneck buffers, computer network performance evaluation, congestion signal, delays, high link utilization, massive packet loss},
-	pages = {1--10},
+	keywords = {available bottleneck link bandwidth, Bandwidth, BBR behavior, BBR congestion control, BBR Linux kernel 4.9 implementation, bit rate 1.0 Gbit/s, bit rate 10.0 Gbit/s, bottleneck buffers, computer network performance evaluation, congestion signal, delays, Delays, high link utilization, Internet, Linux, massive packet loss, Packet loss, queueing theory, telecommunication congestion control, Throughput},
 	file = {IEEE Xplore Abstract Record:/home/max/.zotero/zotero/zzt443zn.default/zotero/storage/E5QQRJRU/8117540.html:text/html;IEEE Xplore Full Text PDF:/home/max/.zotero/zotero/zzt443zn.default/zotero/storage/AYLSSR73/Hock et al. - 2017 - Experimental evaluation of BBR congestion control.pdf:application/pdf}
 }
 
 @inproceedings{turkovic_interactions_2019,
 	title = {Interactions between {Congestion} {Control} {Algorithms}},
-	doi = {10.23919/TMA.2019.8784674},
 	abstract = {Congestion control algorithms are crucial in achieving high utilization while preventing overloading the network. Over the years, many different congestion control algorithms have been developed, each trying to improve over others in specific situations. However, their interactions and co-existence has, to date, not been thoroughly evaluated, which is the focus of this paper. Through head-to-head comparisons of loss-based, delay-based and hybrid types of congestion control algorithms, we reveal that fairness in resources claimed is often not achieved, especially when flows sharing a link have different round-trip times or belong to different groups.},
-	booktitle = {2019 {Network} {Traffic} {Measurement} and {Analysis} {Conference} ({TMA})},
+	booktitle = {{TMA}},
 	author = {Turkovic, Belma and Kuipers, Fernando A. and Uhlig, Steve},
-	month = jun,
 	year = {2019},
-	keywords = {Throughput, Bandwidth, Delays, transport protocols, Linux, telecommunication congestion control, Servers, congestion control algorithms, delay-based type, hybrid type, Indexes, loss-based type, round-trip times},
-	pages = {161--168},
+	keywords = {Bandwidth, congestion control algorithms, delay-based type, Delays, hybrid type, Indexes, Linux, loss-based type, round-trip times, Servers, telecommunication congestion control, Throughput, transport protocols},
 	file = {IEEE Xplore Abstract Record:/home/max/.zotero/zotero/zzt443zn.default/zotero/storage/QCBSZ7ER/8784674.html:text/html;IEEE Xplore Full Text PDF:/home/max/.zotero/zotero/zzt443zn.default/zotero/storage/9C3FFZJN/Turkovic et al. - 2019 - Interactions between Congestion Control Algorithms.pdf:application/pdf}
 }
 
 @article{turkovic_fifty_2019,
 	title = {Fifty {Shades} of {Congestion} {Control}: {A} {Performance} and {Interactions} {Evaluation}},
-	shorttitle = {Fifty {Shades} of {Congestion} {Control}},
-	url = {http://arxiv.org/abs/1903.03852},
 	abstract = {Congestion control algorithms are crucial in achieving high utilization while preventing overloading the network. Over the years, many different congestion control algorithms have been developed, each trying to improve in specific situations. However, their interactions and co-existence has, to date, not been thoroughly evaluated, which is the focus of this paper. Through head-to-head comparisons of representatives from loss-based, delay-based and hybrid types of congestion control algorithms, we reveal that fairness in resources claimed is often not attained, especially when flows sharing a link have different RTTs.},
 	urldate = {2020-06-08},
 	journal = {arXiv:1903.03852 [cs]},
 	author = {Turkovic, Belma and Kuipers, Fernando A. and Uhlig, Steve},
-	month = mar,
 	year = {2019},
-	note = {arXiv: 1903.03852},
 	keywords = {Computer Science - Networking and Internet Architecture},
 	file = {arXiv Fulltext PDF:/home/max/.zotero/zotero/zzt443zn.default/zotero/storage/2BRYRZZV/Turkovic et al. - 2019 - Fifty Shades of Congestion Control A Performance .pdf:application/pdf;arXiv.org Snapshot:/home/max/.zotero/zotero/zzt443zn.default/zotero/storage/HW96BT6D/1903.html:text/html}
 }
@@ -233,7 +190,6 @@ This activation function was first introduced to a dynamical network by Hahnlose
 	language = {en},
 	urldate = {2020-06-09},
 	journal = {Wikipedia},
-	month = apr,
 	year = {2020},
 	note = {Page Version ID: 952377033},
 	file = {Snapshot:/home/max/.zotero/zotero/zzt443zn.default/zotero/storage/IX6VZIL4/index.html:text/html}
@@ -241,280 +197,207 @@ This activation function was first introduced to a dynamical network by Hahnlose
 
 @misc{nsnam_ns-3_nodate,
 	title = {ns-3},
-	url = {/},
 	abstract = {a discrete-event network simulator for internet systems},
-	language = {en},
 	urldate = {2020-06-10},
 	journal = {ns-3},
 	author = {nsnam},
-	note = {Library Catalog: www.nsnam.org},
 	file = {Snapshot:/home/max/.zotero/zotero/zzt443zn.default/zotero/storage/ZLXG2YDW/www.nsnam.org.html:text/html}
 }
 
 @incollection{paszke_pytorch_2019,
 	title = {{PyTorch}: {An} {Imperative} {Style}, {High}-{Performance} {Deep} {Learning} {Library}},
-	booktitle = {Advances in {Neural} {Information} {Processing} {Systems} 32},
+	booktitle = {{NeurIPS}},
 	publisher = {Curran Associates, Inc.},
 	author = {Paszke, Adam and Gross, Sam and Massa, Francisco and Lerer, Adam and Bradbury, James and Chanan, Gregory and Killeen, Trevor and Lin, Zeming and Gimelshein, Natalia and Antiga, Luca and Desmaison, Alban and Kopf, Andreas and Yang, Edward and DeVito, Zachary and Raison, Martin and Tejani, Alykhan and Chilamkurthy, Sasank and Steiner, Benoit and Fang, Lu and Bai, Junjie and Chintala, Soumith},
-	editor = {Wallach, H. and Larochelle, H. and Beygelzimer, A. and Alché-Buc, F. d{\textbackslash}textquotesingle and Fox, E. and Garnett, R.},
-	year = {2019},
-	pages = {8024--8035}
+	editor = {Wallach, H. and Larochelle, H. and Beygelzimer, A. and Alch{\'e}-Buc, F. d{\textbackslash}textquotesingle and Fox, E. and Garnett, R.},
+	year = {2019}
 }
 
 @inproceedings{lisong_xu_binary_2004,
 	title = {Binary increase congestion control ({BIC}) for fast long-distance networks},
-	volume = {4},
-	doi = {10.1109/INFCOM.2004.1354672},
 	abstract = {High-speed networks with large delays present a unique environment where TCP may have a problem utilizing the full bandwidth. Several congestion control proposals have been suggested to remedy this problem. The existing protocols consider mainly two properties: TCP friendliness and bandwidth scalability. That is, a protocol should not take away too much bandwidth from standard TCP flows while utilizing the full bandwidth of high-speed networks. This work presents another important constraint, namely, RTT (round trip time) unfairness where competing flows with different RTTs may consume vastly unfair bandwidth shares. Existing schemes have a severe RTT unfairness problem because the congestion window increase rate gets larger as the window grows ironically the very reason that makes them more scalable. RTT unfairness for high-speed networks occurs distinctly with drop tail routers for flows with large congestion windows where packet loss can be highly synchronized. After identifying the RTT unfairness problem of existing protocols, This work presents a new congestion control scheme that alleviates RTT unfairness while supporting TCP friendliness and bandwidth scalability. The proposed congestion control algorithm uses two window size control policies called additive increase and binary search increase. When the congestion window is large, additive increase with a large increment ensures square RTT unfairness as well as good scalability. Under small congestion windows, binary search increase supports TCP friendliness. The simulation results confirm these properties of the protocol.},
-	booktitle = {{IEEE} {INFOCOM} 2004},
+	booktitle = {{INFOCOM}},
 	author = {Lisong Xu and Harfoush, K. and Injong Rhee},
-	month = mar,
 	year = {2004},
 	note = {ISSN: 0743-166X},
-	keywords = {Bandwidth, Internet, transport protocols, telecommunication congestion control, telecommunication network routing, Computer science, Access protocols, bandwidth scalability, binary increase congestion control, Bit error rate, congestion window increase rate, drop tail router, fast long-distance network, high-speed network, High-speed networks, Network interfaces, Remote monitoring, round trip time unfairness, Scalability, Tail, TCP friendliness},
-	pages = {2514--2524 vol.4},
+	keywords = {Access protocols, Bandwidth, bandwidth scalability, binary increase congestion control, Bit error rate, Computer science, congestion window increase rate, drop tail router, fast long-distance network, high-speed network, High-speed networks, Internet, Network interfaces, Remote monitoring, round trip time unfairness, Scalability, Tail, TCP friendliness, telecommunication congestion control, telecommunication network routing, transport protocols},
 	file = {IEEE Xplore Abstract Record:/home/max/.zotero/zotero/zzt443zn.default/zotero/storage/UDKDR2AM/1354672.html:text/html;IEEE Xplore Full Text PDF:/home/max/.zotero/zotero/zzt443zn.default/zotero/storage/5XSSUDBH/Lisong Xu et al. - 2004 - Binary increase congestion control (BIC) for fast .pdf:application/pdf}
 }
 
 @article{jurkiewicz_flow_2020,
 	title = {Flow length and size distributions in campus {Internet} traffic},
-	url = {http://arxiv.org/abs/1809.03486},
 	abstract = {The efficiency of numerous proposed flow-oriented networking mechanisms strongly depends on traffic characteristics and should thus be assessed using accurate models. For example, in the case of algorithms, which are based on the distinction between elephant and mice flows, it is extremely important to ensure realistic flows' length (in packets) and size (in bytes) distributions. Credible models or data are not available in literature. Numerous works contain only plots roughly presenting empirical probability density functions and cumulative distribution functions of selected flow parameters, however, none of these papers provide distribution mixture models or reusable numerical data. This paper aims to fill that gap and provide accurate and reusable models of flow length and size derived from real traffic traces. Traces were collected at the Internet-facing interface of the university campus network and comprise four billion flow (275 TB of transmitted data). These models can be used to assess a variety of flow-oriented solutions under the assumption of realistic conditions. Additionally, this paper provides a complete tutorial on constructing network flow models from traffic traces. The proposed methodology is universal and can be applied to traffic traces gathered in any network. Apart from the methodology, we also provide an open source software framework which make it possible to analyze flow traces and fit general mixture models to them. To the best of our knowledge, this is the first work that provides such a universal methodology together with fully a usable software framework.},
 	urldate = {2020-06-28},
 	journal = {arXiv:1809.03486 [cs]},
-	author = {Jurkiewicz, Piotr and Rzym, Grzegorz and Boryło, Piotr},
-	month = apr,
+	author = {Jurkiewicz, Piotr and Rzym, Grzegorz and Bory{\l }o, Piotr},
 	year = {2020},
-	note = {arXiv: 1809.03486},
 	keywords = {Computer Science - Networking and Internet Architecture},
 	file = {arXiv Fulltext PDF:/home/max/.zotero/zotero/zzt443zn.default/zotero/storage/FMF7YIGX/Jurkiewicz et al. - 2020 - Flow length and size distributions in campus Inter.pdf:application/pdf;arXiv.org Snapshot:/home/max/.zotero/zotero/zzt443zn.default/zotero/storage/UF7MHYTZ/1809.html:text/html}
 }
 
 @inproceedings{hock_tcp_2017,
 	title = {{TCP} {LoLa}: {Congestion} {Control} for {Low} {Latencies} and {High} {Throughput}},
-	shorttitle = {{TCP} {LoLa}},
-	doi = {10.1109/LCN.2017.42},
 	abstract = {TCP LoLa is a new delay-based congestion control that supports both, low queuing delay and high network utilization in high speed wide-area networks. This is particularly useful for traffic mixes consisting of bandwidth demanding and delay sensitive flows (e.g., long file transfer and interactive "web 2.0" traffic). TCP LoLa keeps the queuing delay at the bottleneck link low around a fixed target threshold value. This target value is independent from the number of flows sharing the bottleneck. TCP LoLa achieves high link utilization and attains convergence to fairness even among flows with different round-trip times, due to its novel mechanism called "fair flow balancing".},
-	booktitle = {2017 {IEEE} 42nd {Conference} on {Local} {Computer} {Networks} ({LCN})},
+	booktitle = {{LCN}},
 	author = {Hock, Mario and Neumeister, Felix and Zitterbart, Martina and Bless, Roland},
 	month = oct,
 	year = {2017},
-	note = {ISSN: 0742-1303},
-	keywords = {telecommunication traffic, Throughput, Bandwidth, Delays, Internet, transport protocols, telecommunication congestion control, queueing theory, delays, high link utilization, bandwidth demanding, Congestion control, convergence, Convergence, delay sensitive flows, delay-based congestion control, fair flow balancing, fixed target threshold value, high network utilization, high speed wide-area networks, interactive web 2.0 traffic, long file transfer, low queuing delay, Receivers, TCP LoLa, traffic mixes},
-	pages = {215--218},
+	keywords = {Bandwidth, bandwidth demanding, Congestion control, convergence, Convergence, delay sensitive flows, delay-based congestion control, delays, Delays, fair flow balancing, fixed target threshold value, high link utilization, high network utilization, high speed wide-area networks, interactive web 2.0 traffic, Internet, long file transfer, low queuing delay, queueing theory, Receivers, TCP LoLa, telecommunication congestion control, telecommunication traffic, Throughput, traffic mixes, transport protocols},
 	file = {IEEE Xplore Abstract Record:/home/max/.zotero/zotero/zzt443zn.default/zotero/storage/A4I7VVJA/8109356.html:text/html}
 }
 
 @inproceedings{dong_pcc_2018,
 	title = {{PCC} vivace: online-learning congestion control},
-	booktitle = {Proceedings of the 15th {USENIX} {Conference} on {Networked} {Systems} {Design} and {Implementation}},
+	booktitle = {{NSDI}},
 	author = {Dong, Mo and Meng, Tong and Zarchy, Doron and Arslan, Engin and Gilad, Yossi and Godfrey, P Brighten and Schapira, Michael},
-	year = {2018},
-	pages = {343--356}
+	year = {2018}
 }
 
 @inproceedings{goyal_abc_2020,
 	title = {{ABC}: {A} {Simple} {Explicit} {Congestion} {Controller} for {Wireless} {Networks}},
-	booktitle = {17th {USENIX} {Symposium} on {Networked} {Systems} {Design} and {Implementation} {NSDI} 20)},
+	booktitle = {{NSDI}},
 	author = {Goyal, Prateesh and Agarwal, Anup and Netravali, Ravi and Alizadeh, Mohammad and Balakrishnan, Hari},
-	year = {2020},
-	pages = {353--372}
+	year = {2020}
 }
 
 @inproceedings{jay_deep_2019,
 	title = {A {Deep} {Reinforcement} {Learning} {Perspective} on {Internet} {Congestion} {Control}},
-	url = {http://proceedings.mlr.press/v97/jay19a.html},
 	abstract = {We present and investigate a novel and timely application domain for deep reinforcement learning (RL): Internet congestion control. Congestion control is the core networking task of modulating traf...},
 	language = {en},
 	urldate = {2020-06-28},
-	booktitle = {International {Conference} on {Machine} {Learning}},
+	booktitle = {{ICML}},
 	author = {Jay, Nathan and Rotman, Noga and Godfrey, Brighten and Schapira, Michael and Tamar, Aviv},
-	month = may,
 	year = {2019},
-	note = {ISSN: 1938-7228
-Section: Machine Learning},
-	pages = {3050--3059},
 	file = {Full Text PDF:/home/max/.zotero/zotero/zzt443zn.default/zotero/storage/AGT24NH8/Jay et al. - 2019 - A Deep Reinforcement Learning Perspective on Inter.pdf:application/pdf;Snapshot:/home/max/.zotero/zotero/zzt443zn.default/zotero/storage/IL3YVLT9/jay19a.html:text/html}
 }
 
 @article{shah_sam_2016,
 	title = {{SAM}: {Support} {Vector} {Machine} {Based} {Active} {Queue} {Management}},
-	shorttitle = {{SAM}},
-	url = {http://arxiv.org/abs/1604.00557},
 	abstract = {Recent years have seen an increasing interest in the design of AQM (Active Queue Management) controllers. The purpose of these controllers is to manage the network congestion under varying loads, link delays and bandwidth. In this paper, a new AQM controller is proposed which is trained by using the SVM (Support Vector Machine) with the RBF (Radial Basis Function) kernal. The proposed controller is called the support vector based AQM (SAM) controller. The performance of the proposed controller has been compared with three conventional AQM controllers, namely the Random Early Detection, Blue and Proportional Plus Integral Controller. The preliminary simulation studies show that the performance of the proposed controller is comparable to the conventional controllers. However, the proposed controller is more efficient in controlling the queue size than the conventional controllers.},
 	urldate = {2020-06-28},
 	journal = {arXiv:1604.00557 [cs]},
 	author = {Shah, Muhammad Saleh and Wagan, Asim Imdad and Unar, Mukhtiar Ali},
-	month = apr,
 	year = {2016},
-	note = {arXiv: 1604.00557},
-	keywords = {Computer Science - Networking and Internet Architecture, Computer Science - Machine Learning},
-	annote = {Comment: 8 pages, Mehran University Research Journal of Engineering and Technology, Vol 33, No.1, January 2014},
+	keywords = {Computer Science - Machine Learning, Computer Science - Networking and Internet Architecture},
 	file = {arXiv Fulltext PDF:/home/max/.zotero/zotero/zzt443zn.default/zotero/storage/4KWIVMDD/Shah et al. - 2016 - SAM Support Vector Machine Based Active Queue Man.pdf:application/pdf;arXiv.org Snapshot:/home/max/.zotero/zotero/zzt443zn.default/zotero/storage/N4PX2KPH/1604.html:text/html}
 }
 
 @inproceedings{vucevic_reinforcement_2007,
 	title = {Reinforcement {Learning} for {Active} {Queue} {Management} in {Mobile} {All}-{IP} {Networks}},
-	doi = {10.1109/PIMRC.2007.4394713},
 	abstract = {In future all-IP based wireless networks, like the envisaged in the long term evolution (LTE) architectures for future systems, network providers will have to deal with large traffic volumes with different QoS requirements. In order to increase exploitation of network resources wisely, intelligent adaptive solutions for class based traffic regulation are needed. In particular, active queue management (AQM) is regarded as one of these solutions to provide low queuing delay and high throughput to flows by smart packet discarding. In this paper, we propose a novel AQM solution for future all-IP networks based on a reinforcement learning scheme that allows controlling both the queuing delay and the packet loss of the different service classes. The proposed approach is evaluated through simulations and compared against other algorithms used in the literature, like the random early detection (RED) and the drop from tail (DFT), confirming the benefits of the proposed algorithm.},
-	booktitle = {2007 {IEEE} 18th {International} {Symposium} on {Personal}, {Indoor} and {Mobile} {Radio} {Communications}},
+	booktitle = {{PIMRC}},
 	author = {Vucevic, Nemanja and Perez-Romero, Jordi and Sallent, Oriol and Agusti, Ramon},
 	month = sep,
 	year = {2007},
-	note = {ISSN: 2166-9589},
-	keywords = {reinforcement learning, Quality of service, telecommunication traffic, Bandwidth, learning (artificial intelligence), IP networks, Telecommunication traffic, queueing theory, Diffserv networks, Tail, active queue management, all-IP based wireless networks, AQM, class based traffic regulation, Delay, drop from tail, intelligent adaptive solutions, Intelligent networks, Learning, mobile all-IP networks, Mobile communication, mobile computing, mobility management (mobile radio), network resources exploitation, QoS, queuing delay, random early detection, Traffic control},
-	pages = {1--5},
+	keywords = {active queue management, all-IP based wireless networks, AQM, Bandwidth, class based traffic regulation, Delay, Diffserv networks, drop from tail, intelligent adaptive solutions, Intelligent networks, IP networks, Learning, learning (artificial intelligence), mobile all-IP networks, Mobile communication, mobile computing, mobility management (mobile radio), network resources exploitation, QoS, Quality of service, queueing theory, queuing delay, random early detection, reinforcement learning, Tail, telecommunication traffic, Telecommunication traffic, Traffic control},
 	file = {IEEE Xplore Abstract Record:/home/max/.zotero/zotero/zzt443zn.default/zotero/storage/8NE28LCS/4394713.html:text/html}
 }
 
 @inproceedings{bisoy_design_2017,
 	title = {Design of an active queue management technique based on neural networks for congestion control},
-	doi = {10.1109/ANTS.2017.8384104},
 	abstract = {In this work, an adaptive neural based active queue management (AQM) technique named ANB-AQM is proposed as network algorithm supporting TCP flows to control congestion and achieves quality of service (QoS). The proposed technique tunes the parameters based on self-learning to deal with the nonlinearity of network systems. It helps in predicting the future value of the packet drop probability by considering the past history of error in queue length. The parameters of the proposed technique adjusted online. The performance of the proposed technique is analyzed with existing AQM such as PI, IAPI and NNPI. The result shows that the proposed technique achieves stability with faster settling time (transient response). Moreover, it achieves smaller delay and smaller jitter than others.},
-	booktitle = {2017 {IEEE} {International} {Conference} on {Advanced} {Networks} and {Telecommunications} {Systems} ({ANTS})},
+	booktitle = {{ANTS}},
 	author = {Bisoy, Sukant Kishoro and Pandey, Pratik Kumar and Pati, Bibudhendu},
-	month = dec,
 	year = {2017},
-	keywords = {Quality of service, Delays, congestion control, transport protocols, telecommunication congestion control, Artificial neural networks, neural nets, neural networks, Neurons, probability, quality of service, queueing theory, Biological neural networks, Neural Networks, AQM, adaptive neural based active queue management technique, ANB-AQM, computer network management, network algorithm, network systems nonlinearity, Queueing analysis, Settling time, Stability, Stability analysis},
-	pages = {1--6},
+	keywords = {adaptive neural based active queue management technique, ANB-AQM, AQM, Artificial neural networks, Biological neural networks, computer network management, congestion control, Delays, network algorithm, network systems nonlinearity, neural nets, neural networks, Neural Networks, Neurons, probability, quality of service, Quality of service, Queueing analysis, queueing theory, Settling time, Stability, Stability analysis, telecommunication congestion control, transport protocols},
 	file = {IEEE Xplore Abstract Record:/home/max/.zotero/zotero/zzt443zn.default/zotero/storage/H6W6WK3L/8384104.html:text/html}
 }
 
 @article{bouacida_practical_2019,
 	title = {Practical and {Dynamic} {Buffer} {Sizing} {Using} {LearnQueue}},
-	volume = {18},
-	issn = {1558-0660},
-	doi = {10.1109/TMC.2018.2868670},
 	abstract = {Wireless networks are undergoing an unprecedented revolution in the last decade. With the explosion of delay-sensitive applications usage on the Internet (i.e., online gaming, VoIP, and safety-critical applications), latency becomes a major issue for the development of wireless technology since it has an enormous impact on user experience. In fact, in a phenomenon known as bufferbloat, large static buffers inside the network devices results in increasing the time that packets spend in the queues and, thus, causing larger delays. Concerns have arisen about designing efficient queue management schemes to mitigate the effects of over-buffering in wireless devices. In this paper, we advocate the exploitation of machine learning techniques for dynamic buffer sizing. We propose LearnQueue, a novel reinforcement learning design that can effectively control the latency in wireless networks. LearnQueue adapts quickly and intelligently to changes in the wireless environment using a sophisticated reward structure. The latency control is performed dynamically by tuning the buffer size. Adopting a trial-and-error approach, the proposed scheme penalizes the actions resulting in longer delays or hurting the throughput. In addition, the scheme parameters are designed for an optimized operation depending on different applications requirements. Using the latest generation of WARP hardware, we investigated LearnQueue performance in various network scenarios. The testbed results prove that LearnQueue can grantee low latency while preserving throughput under various congestion situations. We also discuss the feasibility and possible limitations of large-scale deployment of the proposed scheme in wireless devices.},
-	number = {8},
 	journal = {IEEE Transactions on Mobile Computing},
 	author = {Bouacida, Nader and Shihada, Basem},
-	month = aug,
 	year = {2019},
-	note = {Conference Name: IEEE Transactions on Mobile Computing},
-	keywords = {reinforcement learning, Throughput, Delays, machine learning, Internet, learning (artificial intelligence), telecommunication congestion control, queueing theory, telecommunication computing, Heuristic algorithms, delays, active queue management, computer network management, buffer size tuning, buffer storage, bufferbloat, Bufferbloat, delay-sensitive applications usage, dynamic buffer sizing, latency, latency control, Learning (artificial intelligence), LearnQueue performance, network devices, over-buffering effects mitigation, queue management, radio networks, reinforcement learning design, reward structure, static buffers, trial-and-error approach, user experience, WARP hardware, wireless devices, wireless networks, Wireless networks},
-	pages = {1885--1897},
+	keywords = {active queue management, buffer size tuning, buffer storage, bufferbloat, Bufferbloat, computer network management, delay-sensitive applications usage, delays, Delays, dynamic buffer sizing, Heuristic algorithms, Internet, latency, latency control, learning (artificial intelligence), Learning (artificial intelligence), LearnQueue performance, machine learning, network devices, over-buffering effects mitigation, queue management, queueing theory, radio networks, reinforcement learning, reinforcement learning design, reward structure, static buffers, telecommunication computing, telecommunication congestion control, Throughput, trial-and-error approach, user experience, WARP hardware, wireless devices, wireless networks, Wireless networks},
 	file = {Full Text:/home/max/.zotero/zotero/zzt443zn.default/zotero/storage/B5Q4UWHY/Bouacida and Shihada - 2019 - Practical and Dynamic Buffer Sizing Using LearnQue.pdf:application/pdf;IEEE Xplore Abstract Record:/home/max/.zotero/zotero/zzt443zn.default/zotero/storage/CSGXTI99/8454283.html:text/html}
 }
 
 @inproceedings{fejes_who_2019,
-	address = {Palo Alto, CA, USA},
-	series = {{BS} '19},
 	title = {Who will {Save} the {Internet} from the {Congestion} {Control} {Revolution}?},
-	isbn = {978-1-4503-7745-4},
-	url = {https://doi.org/10.1145/3375235.3375242},
-	doi = {10.1145/3375235.3375242},
 	abstract = {Active queue management (AQM) techniques have evolved in the recent years, after defining the bufferbloat problem. In parallel novel congestion control (CC) algorithms have been developed to achieve better data transport performance, often assuming simple tail dropping buffers. On the other hand, AQM algorithms usually assume legacy CC (Cubic). Though all of the novel AQM and CC algorithms improve the performance under these assumptions, their co-existence has not or only partially been tested so far. Similarly, router buffer sizing was studied mainly in the 2000s, also assuming traditional CC and tail dropping buffers. In this paper we show that combining the different AQMs and CCs evolved in the past few years results in poor fairness, because assumptions used during development do not hold in this heterogeneous case. We also show that while a non-traditional AQM, using core-stateless resource sharing control, has the potential to harmonize conflicting CCs, it suffers from deployment issues. We argue that when dimensioning router buffers in networks where connections with different CCs coexist, the right choice of AQM is more important than the size of the buffer itself.},
-	urldate = {2020-06-30},
-	booktitle = {Proceedings of the 2019 {Workshop} on {Buffer} {Sizing}},
-	publisher = {Association for Computing Machinery},
-	author = {Fejes, Ferenc and Gombos, Gergő and Laki, Sándor and Nádas, Szilveszter},
-	month = dec,
+	booktitle = {Workshop on {Buffer} {Sizing}},
+	publisher = {ACM},
+	author = {Fejes, Ferenc and Gombos, Gerg{\H o} and Laki, S{\'a}ndor and N{\'a}das, Szilveszter},
 	year = {2019},
 	keywords = {AQM, Buffer Sizing, Congestion Control, Fairness},
-	pages = {1--6},
 	file = {Full Text PDF:/home/max/.zotero/zotero/zzt443zn.default/zotero/storage/LLM6NQBI/Fejes et al. - 2019 - Who will Save the Internet from the Congestion Con.pdf:application/pdf}
-}
-
-@inproceedings{bless_policy-oriented_2018-1,
-	title = {Policy-oriented {AQM} {Steering}},
-	doi = {10.23919/IFIPNetworking.2018.8696627},
-	abstract = {Detecting and handling network congestion in the Internet has, again, become a vital area of research. The provisioning of low latency together with high throughput is of particular interest due to the current mix of applications running in the Internet. Active Queue Management (AQM) mechanisms come with the promise of reducing queuing delays. They, however, may adversely affect throughput and network utilization and have proven to be difficult to configure. More recent AQMs, such as CoDel, PIE, and GSP are easier to configure but work with a fixed target delay setpoint. Depending on the traffic the same setpoint value can result either in unnecessary large delays or under-utilization of the link. Policy-oriented AQM Steering automatically adapts the target delay setpoint to the current traffic situation, in order to fulfill a given quality-of-service policy. Such a policy consists of a utilization goal and an upper delay bound. This improves AQM performance with varying traffic situations and makes the impact of deploying an AQM predictable. A prototypical implementation of AQM Steering for GSP showed its performance advantages compared to static AQM variants at speeds of 10 Gbit/s and 1 Gbit/s.},
-	booktitle = {2018 {IFIP} {Networking} {Conference} ({IFIP} {Networking}) and {Workshops}},
-	author = {Bless, Roland and Hock, Mario and Zitterbart, Martina},
-	month = may,
-	year = {2018},
-	keywords = {Throughput, Bandwidth, Delays, Internet, network congestion, Active Queue Management mechanisms, CoDel, fixed target delay setpoint, GSP, network utilization, Packet loss, PIE, policy-oriented AQM Steering, quality of service, quality-of-service policy, queueing theory, queuing delays, static AQM variants, synchronisation, telecommunication network management, traffic situation, Upper bound},
-	pages = {1--9},
-	file = {IEEE Xplore Abstract Record:/home/max/.zotero/zotero/zzt443zn.default/zotero/storage/AUFWCMRN/8696627.html:text/html;IEEE Xplore Full Text PDF:/home/max/.zotero/zotero/zzt443zn.default/zotero/storage/YGAUX7HV/Bless et al. - 2018 - Policy-oriented AQM Steering.pdf:application/pdf}
 }
 
 @inproceedings{fejes_incompatibility_2020,
 	title = {On the {Incompatibility} of {Scalable} {Congestion} {Controls} over the {Internet}},
-	abstract = {In addition to classic ones, a new family of congestion controls regarded as “scalable” has recently emerged. Scalable congestion control exploits ECN to provide much ﬁner control as rate scales, enabling reactions proportional to the congestion level. Nowadays, different initiatives propose the use of Scalable congestion control over the public Internet, with the separation of Scalable and Classic ﬂows. Similar to classic approaches, the evolution of Scalable congestion control has also begun as BBRv2 implemented a “DCTCP-inspired” ECN mechanism. In this paper, we investigate the compatibility of two available Scalable congestion controls, Data Center TCP, and Google’s recent proposal called BBRv2, and evaluate them with different ECN marking strategies. Our evaluation relies on numerous measurements carried out in our testbed with 1 to 10Gbps bottleneck capacities and heterogeneous round trip times. At the bottleneck, the ECN marking of two traditional AQMs (STEP and PI2) most commonly proposed for Scalable ﬂows and a non-traditional core-stateless AQM (CSAQM) using in-network resource sharing control is examined. After showing compatibility issues, we conclude that as long as the end-to-end ﬂows control resource sharing, it will be tough to create a new, evolved congestion control that is fair to legacy solutions, and its deployment does not harm the Internet.},
-	language = {en},
-	author = {Fejes, Mr Ferenc and Gombos, Mr Gergo and Laki, Mr Sándor and Nádas, Mr Szilveszter},
-	month = jun,
+	abstract = {In addition to classic ones, a new family of congestion controls regarded as {\textquotedblleft}scalable{\textquotedblright} has recently emerged. Scalable congestion control exploits ECN to provide much finer control as rate scales, enabling reactions proportional to the congestion level. Nowadays, different initiatives propose the use of Scalable congestion control over the public Internet, with the separation of Scalable and Classic flows. Similar to classic approaches, the evolution of Scalable congestion control has also begun as BBRv2 implemented a {\textquotedblleft}DCTCP-inspired{\textquotedblright} ECN mechanism. In this paper, we investigate the compatibility of two available Scalable congestion controls, Data Center TCP, and Google{\textquoteright}s recent proposal called BBRv2, and evaluate them with different ECN marking strategies. Our evaluation relies on numerous measurements carried out in our testbed with 1 to 10Gbps bottleneck capacities and heterogeneous round trip times. At the bottleneck, the ECN marking of two traditional AQMs (STEP and PI2) most commonly proposed for Scalable flows and a non-traditional core-stateless AQM (CSAQM) using in-network resource sharing control is examined. After showing compatibility issues, we conclude that as long as the end-to-end flows control resource sharing, it will be tough to create a new, evolved congestion control that is fair to legacy solutions, and its deployment does not harm the Internet.},
+	author = {Fejes, Mr Ferenc and Gombos, Mr Gergo and Laki, Mr S{\'a}ndor and N{\'a}das, Mr Szilveszter},
 	year = {2020},
-	pages = {6},
 	file = {Fejes et al. - On the Incompatibility of Scalable Congestion Cont.pdf:/home/max/.zotero/zotero/zzt443zn.default/zotero/storage/CA6LI2FV/Fejes et al. - On the Incompatibility of Scalable Congestion Cont.pdf:application/pdf}
 }
 
 @inproceedings{jarschel_evaluation_2011,
 	title = {An {Evaluation} of {QoE} in {Cloud} {Gaming} {Based} on {Subjective} {Tests}},
-	doi = {10.1109/IMIS.2011.92},
 	abstract = {Cloud Gaming is a new kind of service, which combines the successful concepts of Cloud Computing and Online Gaming. It provides the entire game experience to the users remotely from a data center. The player is no longer dependent on a specific type or quality of gaming hardware, but is able to use common devices. The end device only needs a broadband internet connection and the ability to display High Definition (HD) video. While this may reduce hardware costs for users and increase the revenue for developers by leaving out the retail chain, it also raises new challenges for service quality in terms of bandwidth and latency for the underlying network. In this paper we present the results of a subjective user study we conducted into the user-perceived quality of experience (QoE) in Cloud Gaming. We design a measurement environment, that emulates this new type of service, define tests for users to assess the QoE, derive Key Influence Factors (KFI) and influences of content and perception from our results.},
-	booktitle = {2011 {Fifth} {International} {Conference} on {Innovative} {Mobile} and {Internet} {Services} in {Ubiquitous} {Computing}},
-	author = {Jarschel, Michael and Schlosser, Daniel and Scheuring, Sven and Hoßfeld, Tobias},
+	booktitle = {{IMIS}},
+	author = {Jarschel, Michael and Schlosser, Daniel and Scheuring, Sven and Ho{\ss}feld, Tobias},
 	month = jun,
 	year = {2011},
-	keywords = {Quality of service, Streaming media, Servers, Hardware, Delay, broadband Internet connection, cloud computing, cloud gaming, Cloud Gaming, computer games, data center, Games, gaming hardware, high definition video, key influence factors, online gaming, QoE, quality of experience, retail chain, service quality, Software, Survey},
-	pages = {330--335},
+	keywords = {broadband Internet connection, cloud computing, cloud gaming, Cloud Gaming, computer games, data center, Delay, Games, gaming hardware, Hardware, high definition video, key influence factors, online gaming, QoE, quality of experience, Quality of service, retail chain, Servers, service quality, Software, Streaming media, Survey},
 	file = {IEEE Xplore Abstract Record:/home/max/.zotero/zotero/zzt443zn.default/zotero/storage/9BAZ83W5/5976180.html:text/html;IEEE Xplore Full Text PDF:/home/max/.zotero/zotero/zzt443zn.default/zotero/storage/BH25EAIM/Jarschel et al. - 2011 - An Evaluation of QoE in Cloud Gaming Based on Subj.pdf:application/pdf}
 }
 
 @article{elbamby_toward_2018,
 	title = {Toward {Low}-{Latency} and {Ultra}-{Reliable} {Virtual} {Reality}},
-	volume = {32},
-	issn = {1558-156X},
-	doi = {10.1109/MNET.2018.1700268},
 	abstract = {VR is expected to be one of the killer applications in 5G networks. However, many technical bottlenecks and challenges need to be overcome to facilitate its wide adoption. In particular, VR requirements in terms of high throughput, low latency, and reliable communication call for innovative solutions and fundamental research cutting across several disciplines. In view of the above, this article discusses the challenges and enablers for ultra-reliable and low-latency VR. Furthermore, in an interactive VR gaming arcade case study, we show that a smart network design that leverages the use of mmWave communication, edge computing, and proactive caching can achieve the future vision of VR over wireless.},
-	number = {2},
 	journal = {IEEE Network},
 	author = {Elbamby, Mohammed S. and Perfecto, Cristina and Bennis, Mehdi and Doppler, Klaus},
-	month = mar,
 	year = {2018},
-	note = {Conference Name: IEEE Network},
-	keywords = {Streaming media, Wireless communication, Delays, Servers, Reliability, mobile computing, 5G mobile communication, cache storage, edge computing, Headphones, interactive VR gaming arcade case study, millimetre wave communication, mmWave communication, proactive caching, reliable communication call, smart network design, technical bottlenecks, telecommunication network reliability, ultra-reliable virtual reality, virtual reality, Virtual reality, VR requirements},
-	pages = {78--84},
+	keywords = {5G mobile communication, cache storage, Delays, edge computing, Headphones, interactive VR gaming arcade case study, millimetre wave communication, mmWave communication, mobile computing, proactive caching, Reliability, reliable communication call, Servers, smart network design, Streaming media, technical bottlenecks, telecommunication network reliability, ultra-reliable virtual reality, virtual reality, Virtual reality, VR requirements, Wireless communication},
 	file = {IEEE Xplore Abstract Record:/home/max/.zotero/zotero/zzt443zn.default/zotero/storage/NT4Z9X2J/8329628.html:text/html;IEEE Xplore Full Text PDF:/home/max/.zotero/zotero/zzt443zn.default/zotero/storage/GLIG8PCV/Elbamby et al. - 2018 - Toward Low-Latency and Ultra-Reliable Virtual Real.pdf:application/pdf}
 }
 
 @inproceedings{li_5g_2018,
 	title = {{5G} {URLLC}: {Design} {Challenges} and {System} {Concepts}},
-	shorttitle = {{5G} {URLLC}},
-	doi = {10.1109/ISWCS.2018.8491078},
 	abstract = {The upcoming fifth generation (5G) wireless communication system is expected to support a broad range of newly emerging applications on top of the regular cellular mobile broadband services. One of the key usage scenarios in the scope of 5G is ultra-reliable and low-latency communications (URLLC). Among the active researchers from both academy and industry, one common view is that URLLC will play an essential role in providing connectivity for the new services and applications from vertical domains, such as factory automation, autonomous driving and so on. The most important key performance indicators (KPIs) related to URLLC are latency, reliability and availability. In this paper, after brief discussion on the design challenges related to URLLC use cases, we present an overview of the available technology components from 3GPP Rel-15 and potential ones from Rel-16. In addition, coordinated multi-cell resource allocation methods are studied. From the system level simulation results in an urban macro environment, it can be observed that effective multi-cell cooperation, more specifically soft combining, can lead to a significant gain in terms of URLLC capacity.},
-	booktitle = {2018 15th {International} {Symposium} on {Wireless} {Communication} {Systems} ({ISWCS})},
+	booktitle = {{ISWCS}},
 	author = {Li, Zexian and Uusitalo, Mikko A. and Shariatmadari, Hamidreza and Singh, Bikramjit},
-	month = aug,
 	year = {2018},
-	note = {ISSN: 2154-0225},
-	keywords = {Reliability, latency, 5G mobile communication, telecommunication network reliability, 3G mobile communication, 3GPP, 3GPP Rel-15, 5G, 5G URLLC capacity, 5G wireless communication system, Automation, cellular mobile broadband services, cellular radio, coordinated multicell resource allocation methods, factory automation, fifth generation wireless communication system, Interference, key performance indicators, KPI, low-latency communications, muiti-cell/multi-TRP (Tx/Rx Point) coordination, OFDM, reliability, resource allocation, system level simulation results, ultrareliable low-latency communications, URLLC},
-	pages = {1--6},
+	keywords = {3G mobile communication, 3GPP, 3GPP Rel-15, 5G, 5G mobile communication, 5G URLLC capacity, 5G wireless communication system, Automation, cellular mobile broadband services, cellular radio, coordinated multicell resource allocation methods, factory automation, fifth generation wireless communication system, Interference, key performance indicators, KPI, latency, low-latency communications, muiti-cell/multi-TRP (Tx/Rx Point) coordination, OFDM, reliability, Reliability, resource allocation, system level simulation results, telecommunication network reliability, ultrareliable low-latency communications, URLLC},
 	file = {IEEE Xplore Abstract Record:/home/max/.zotero/zotero/zzt443zn.default/zotero/storage/CN5TL7GI/8491078.html:text/html;IEEE Xplore Full Text PDF:/home/max/.zotero/zotero/zzt443zn.default/zotero/storage/WDCNG9S4/Li et al. - 2018 - 5G URLLC Design Challenges and System Concepts.pdf:application/pdf}
 }
 
 @inproceedings{nakkiran_deep_2019,
 	title = {Deep {Double} {Descent}: {Where} {Bigger} {Models} and {More} {Data} {Hurt}},
-	booktitle = {International {Conference} on {Learning} {Representations}},
+	booktitle = {{ICLR}},
 	author = {Nakkiran, Preetum and Kaplun, Gal and Bansal, Yamini and Yang, Tristan and Barak, Boaz and Sutskever, Ilya},
 	year = {2019}
 }
 
 @inproceedings{bachl_sparseids_2020,
 	title = {{SparseIDS}: {Learning} {Packet} {Sampling} with {Reinforcement} {Learning}},
-	shorttitle = {{SparseIDS}},
 	abstract = {Recurrent Neural Networks (RNNs) have been shown to be valuable for constructing Intrusion Detection Systems (IDSs) for network data. They allow determining if a flow is malicious or not already before it is over, making it possible to take action immediately. However, considering the large number of packets that has to be inspected, for example in cloud/fog and edge computing, the question of computational efficiency arises. We show that by using a novel Reinforcement Learning (RL)-based approach called SparseIDS, we can reduce the number of consumed packets by more than three fourths while keeping classification accuracy high. To minimize the computational expenses of the RL-based sampling we show that a shared neural network can be used for both the classifier and the RL logic. Thus, no additional resources are consumed by the sampling in deployment. Comparing to various other sampling techniques, SparseIDS consistently achieves higher classification accuracy by learning to sample only relevant packets. A major novelty of our RL-based approach is that it can not only skip up to a predefined maximum number of samples like other approaches proposed in the domain of Natural Language Processing but can even skip arbitrarily many packets in one step. This enables saving even more computational resources for long sequences. Inspecting SparseIDS's behavior of choosing packets shows that it adopts different sampling strategies for different attack types and network flows. Finally we build an automatic steering mechanism that can guide SparseIDS in deployment to achieve a desired level of sparsity.},
-	booktitle = {2020 {IEEE} {Conference} on {Communications} and {Network} {Security} ({CNS})},
-	publisher = {IEEE},
+	booktitle = {{CNS}},
 	author = {Bachl, Maximilian and Meghdouri, Fares and Fabini, Joachim and Zseby, Tanja},
 	year = {2020},
-	note = {arXiv: 2002.03872},
 	keywords = {Computer Science - Cryptography and Security, Computer Science - Machine Learning, Computer Science - Networking and Internet Architecture, Statistics - Machine Learning},
 	file = {arXiv Fulltext PDF:/home/max/.zotero/zotero/zzt443zn.default/zotero/storage/UPRY8BXY/Bachl et al. - 2020 - SparseIDS Learning Packet Sampling with Reinforce.pdf:application/pdf;arXiv.org Snapshot:/home/max/.zotero/zotero/zzt443zn.default/zotero/storage/277VA5UF/2002.html:text/html}
 }
 
 @inproceedings{xu_experience-driven_2018,
 	title = {Experience-driven {Networking}: {A} {Deep} {Reinforcement} {Learning} based {Approach}},
-	shorttitle = {Experience-driven {Networking}},
-	doi = {10.1109/INFOCOM.2018.8485853},
 	abstract = {Modern communication networks have become very complicated and highly dynamic, which makes them hard to model, predict and control. In this paper, we develop a novel experience-driven approach that can learn to well control a communication network from its own experience rather than an accurate mathematical model, just as a human learns a new skill (such as driving, swimming, etc). Specifically, we, for the first time, propose to leverage emerging Deep Reinforcement Learning (DRL) for enabling model-free control in communication networks; and present a novel and highly effective DRL-based control framework, DRL-TE, for a fundamental networking problem: Traffic Engineering (TE). The proposed framework maximizes a widely-used utility function by jointly learning network environment and its dynamics, and making decisions under the guidance of powerful Deep Neural Networks (DNNs). We propose two new techniques, TE-aware exploration and actor-critic-based prioritized experience replay, to optimize the general DRL framework particularly for TE. To validate and evaluate the proposed framework, we implemented it in ns-3, and tested it comprehensively with both representative and randomly generated network topologies. Extensive packet-level simulation results show that 1) compared to several widely-used baseline methods, DRL-TE significantly reduces end-to-end delay and consistently improves the network utility, while offering better or comparable throughput; 2) DRL-TE is robust to network changes; and 3) DRL-TE consistently outperforms a state-of-the-art DRL method (for continuous control), Deep Deterministic Policy Gradient (DDPG), which, however, does not offer satisfying performance.},
-	booktitle = {{IEEE} {INFOCOM} 2018 - {IEEE} {Conference} on {Computer} {Communications}},
+	booktitle = {{INFOCOM}},
 	author = {Xu, Zhiyuan and Tang, Jian and Meng, Jingsong and Zhang, Weiyi and Wang, Yanzhi and Liu, Chi Harold and Yang, Dejun},
-	month = apr,
 	year = {2018},
 	keywords = {actor-critic-based prioritized experience replay, Aerospace electronics, communication network topologies, Communication networks, DDPG, deep deterministic policy gradient, deep neural networks, Deep Reinforcement Learning, deep reinforcement learning based approach, Delays, DNN, experience-driven approach, Experience-driven Networking, general DRL-TE framework, learning (artificial intelligence), mathematical analysis, mathematical model, Mathematical model, model-free control, neurocontrollers, packet-level simulation, Predictive models, Queueing analysis, Resource management, TE-aware exploration, telecommunication control, telecommunication network topology, telecommunication traffic, traffic engineering, Traffic Engineering},
-	pages = {1871--1879},
 	file = {IEEE Xplore Abstract Record:/home/max/.zotero/zotero/zzt443zn.default/zotero/storage/NCZWAZ6I/8485853.html:text/html;IEEE Xplore Full Text PDF:/home/max/.zotero/zotero/zzt443zn.default/zotero/storage/G2X23PJQ/Xu et al. - 2018 - Experience-driven Networking A Deep Reinforcement.pdf:application/pdf}
+}
+
+@inproceedings{sander_deepcci_2019,
+	title = {{DeePCCI}: {Deep} {Learning}-based {Passive} {Congestion} {Control} {Identification}},
+	abstract = {Transport protocols use congestion control to avoid overloading a network. Nowadays, different congestion control variants exist that influence performance. Studying their use is thus relevant, but it is hard to identify which variant is used. While passive identification approaches exist, these require detailed domain knowledge and often also rely on outdated assumptions about how congestion control operates and what data is accessible. We present DeePCCI, a passive, deep learning-based congestion control identification approach which does not need any domain knowledge other than training traffic of a congestion control variant. By only using packet arrival data, it is also directly applicable to encrypted (transport header) traffic. DeePCCI is therefore more easily extendable and can also be used with QUIC.},
+	urldate = {2020-09-17},
+	booktitle = {{NetAI}},
+	publisher = {ACM},
+	author = {Sander, Constantin and R{\"u}th, Jan and Hohlfeld, Oliver and Wehrle, Klaus},
+	year = {2019},
+	keywords = {Congestion Control, Congestion Control Identification, Deep Learning, Passive Measurements},
+	file = {Full Text PDF:/home/max/.zotero/zotero/zzt443zn.default/zotero/storage/8SHHNR6T/Sander et al. - 2019 - DeePCCI Deep Learning-based Passive Congestion Co.pdf:application/pdf}
 }

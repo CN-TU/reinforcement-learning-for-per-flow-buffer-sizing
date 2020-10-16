@@ -7,7 +7,7 @@
 \usepackage[nomain, toc, acronym]{glossaries}
 \usepackage{subfig}
 \usepackage{booktabs}
-\usepackage{hyperref}
+\usepackage[draft,bookmarks=false]{hyperref}
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{graphicx}
@@ -42,13 +42,11 @@
 \title{LFQ: Online Learning of Per-flow Queuing Policies using Deep Reinforcement Learning}
 
 \author{\IEEEauthorblockN{Maximilian Bachl, Joachim Fabini, Tanja Zseby}
-\IEEEauthorblockA{Technische Universität Wien\\
-Vienna, Austria\\
-firstname.lastname@tuwien.ac.at}}
+\IEEEauthorblockA{Technische Universität Wien; Vienna, Austria; firstname.lastname@tuwien.ac.at}}
 
 \maketitle
-\thispagestyle{plain}
-\pagestyle{plain}
+%\thispagestyle{plain}
+%\pagestyle{plain}
 
 \begin{abstract}
 The increasing number of different, incompatible congestion control algorithms has led to an increased deployment of fair queuing. Fair queuing isolates each network flow and can thus guarantee fairness for each flow even if the flows' congestion controls are not inherently fair. So far, each queue in the fair queuing system either has a fixed, static maximum size or is managed by an Active Queue Management (AQM) algorithm like CoDel. In this paper we design an AQM mechanism (Learning Fair Qdisc (LFQ)) that dynamically learns the optimal buffer size for each flow according to a specified reward function online. We show that our Deep Learning based algorithm can dynamically assign the optimal queue size to each flow depending on its congestion control, delay and bandwidth. Comparing to competing fair AQM schedulers, it provides significantly smaller queues while achieving the same or higher throughput. 
@@ -57,25 +55,29 @@ The increasing number of different, incompatible congestion control algorithms h
 \section{Introduction}
 \label{sec:intro}
 
-New \glspl{cca} for TCP and QUIC are still being introduced, revisiting old ideas but also introducing new concepts \cite{dong_pcc_2018, cardwell_bbr:_2016, hock_tcp_2017, bachl_rax_2019, jay_deep_2019}. Some of them, such as BBR, are already being used in real-world production systems. While new \glspl{cca} are commonly being designed with compatibility to other \glspl{cca} in mind, often they do not share the link completely fairly with older \glspl{cca} \cite{hock_experimental_2017, fejes_who_2019, fejes_incompatibility_2020}. Besides that, network flows using the same \gls{cca} can also be unfair to each other: For example, BBR favors flows with a high \gls{rtt}, while New Reno favors those with a low one \cite{turkovic_interactions_2019,turkovic_fifty_2019}. This unfairness can be mitigated by using \gls{fq} at the bottleneck link, isolating each flow from all other flows and assigning each flow an equal share of bandwidth \cite{dumazet_pkt_sched:_2013}. 
+Given the high throughput and low queuing delay that is required by emerging cloud gaming  and virtual reality applications, effective congestion control and the optimal management of each flow's queue become increasingly relevant questions. New \glspl{cca} for TCP and QUIC are still being introduced, revisiting old ideas but also introducing new concepts \cite{dong_pcc_2018, cardwell_bbr:_2016, bachl_rax_2019}. Some of them, such as BBR, are already being used in real-world production systems. While new \glspl{cca} are commonly being designed with compatibility to other \glspl{cca} in mind, often they do not share the link completely fairly with older \glspl{cca} \cite{fejes_who_2019}. Besides that, network flows using the same \gls{cca} can also be unfair to each other: For example, BBR favors flows with a high \gls{rtt}, while New Reno favors those with a low one \cite{turkovic_interactions_2019}. This unfairness can be mitigated by using \gls{fq} at the bottleneck link, isolating each flow from all other flows and assigning each flow an equal share of bandwidth \cite{dumazet_pkt_sched:_2013}. 
+ 
+While \gls{fq} solves the fairness problem, the optimal size of each of the flow's queues is still a problem. We thus propose an algorithm that fingerprints each flow dynamically and assigns the optimal buffer size to it according to a reward function. The mechanism that fingerprints the flows and outputs the correct buffer size is based on \gls{rl} and \gls{dl}. 
+ 
+%The simplest solution manage a flow's buffer is to use a static buffer size (queue size) for each flow. However, this can lead to inacceptably large queuing delays. Another solution is to use an advanced \gls{aqm} mechanism like CoDel for each flow. CoDel aims to keep the queue length under a certain threshold, making sure that the queuing delay was smaller than 5\,ms in the last 100\,ms at least once. Otherwise it drops packets to decrease the queue length. Both of these approaches do not differentiate between flows: They apply the same logic to each flow irrespective of its congestion control and irrespective of the current bandwidth and \gls{rtt}. \cite{bachl_cocoa_2019} showed that this behavior leads to some flows not being able to claim the full bandwidth that they are entitled to. Other flows might achieve the full bandwidth but keep an unnecessary standing queue. The authors then proposed a mechanism that adjusts the queue of each flow based on its congestion control and showed that it works well for several common \glspl{cca}. However, their algorithm has parameters that have to be manually adjusted and it is not guaranteed to work for every \gls{cca} because it makes the assumption that each flow's congestion window follows a zigzag (sawtooth) pattern. Furthermore, their approach is only tailored towards flows that always have data to send while the behavior for application limited flows, that also have idle periods, is not clear. 
 
-Given the high throughput and low queuing delay that is required by emerging cloud gaming \cite{jarschel_evaluation_2011} and virtual reality \cite{elbamby_toward_2018} applications, the optimal management of each flow's queue becomes an increasingly relevant question. Furthermore, for 5G, ultra low latency communications have been made a priority \cite{li_5g_2018} and we argue that effective buffering must also be taken into account for achieving this goal. The simplest solution manage a flow's buffer is to use a static buffer size (queue size) for each flow. However, this can lead to inacceptably large queuing delays. Another solution is to use an advanced \gls{aqm} mechanism like CoDel for each flow. CoDel aims to keep the queue length under a certain threshold, making sure that the queuing delay was smaller than 5\,ms in the last 100\,ms at least once. Otherwise it drops packets to decrease the queue length. Both of these approaches do not differentiate between flows: They apply the same logic to each flow irrespective of its congestion control and irrespective of the current bandwidth and \gls{rtt}. \cite{bachl_cocoa_2019} showed that this behavior leads to some flows not being able to claim the full bandwidth that they are entitled to. Other flows might achieve the full bandwidth but keep an unnecessary standing queue. The authors then proposed a mechanism that adjusts the queue of each flow based on its congestion control and showed that it works well for several common \glspl{cca}. However, their algorithm has parameters that have to be manually adjusted and it is not guaranteed to work for every \gls{cca} because it makes the assumption that each flow's congestion window follows a zigzag (sawtooth) pattern. Furthermore, their approach is only tailored towards flows that always have data to send while the behavior for application limited flows, that also have idle periods, is not clear. 
-
-Instead of a hand-crafted solution like the existing ones, we argue that instead operators of network hardware should be able to simply specify a reward function, and the \gls{aqm} should then automatically find the right queuing policy based on that reward function using \gls{ml}. We propose \gls{ours}, which achieves these goals. 
+%Instead of a hand-crafted solution like the existing ones, we argue that instead operators of network hardware should be able to simply specify a reward function, and the \gls{aqm} should then automatically find the right queuing policy based on that reward function using \gls{ml}. We propose \gls{ours}, which achieves these goals. 
 
 To make our work reproducible and to encourage further research, we make the code, figures and trained neural network weights of this work publicly available\footnote{\scriptsize\url{https://github.com/CN-TU/reinforcement-learning-for-per-flow-buffer-sizing}}. For more details, we also provide a longer version of this paper\footnote{\url{https://arxiv.org/abs/2007.02735}}.
 
 \section{Related Work}
 
-\cite{bachl_cocoa_2019} uses a hand-crafted algorithm to optimize the queuing behavior for different \glspl{cca}. It is, however, not guaranteed that this algorithm works for all new \glspl{cca} and for all traffic pattern. 
+\cite{sander_deepcci_2019} use \gls{dl} to recognize flows' \gls{cca}, showing that \gls{dl} is feasible to fingerprint flows. 
+
+\cite{bachl_cocoa_2019} use a hand-crafted algorithm to optimize the queuing behavior for different \glspl{cca}. It is, however, not guaranteed that this algorithm works for new \glspl{cca} and traffic patterns. 
 
 \cite{bless_policy-oriented_2018} develop a steering system for \gls{aqm}, which takes as the input a target utilization (like 95\%) and then tries to adjust the queue so that this target utilization is met. It operates on shared buffers and employs no \gls{ml} and fingerprinting of flows. 
 
-\cite{kim_deep_2019} use Deep Reinforcement Learning to develop an \gls{aqm} mechanism for IoT devices that works on the output queue of a switch.  \cite{bouacida_practical_2019,bisoy_design_2017} use \gls{rl} to build an \gls{aqm} algorithm for shared buffers. \cite{vucevic_reinforcement_2007} uses \gls{rl} as well and focuses specifically on cellular communications. \cite{lin_kemy_2015} use a custom optimization approach that relies on as offline greedy algorithm which finds optimal rules for an \gls{aqm} that fulfills a certain reward function. \cite{shah_sam_2016} build an \gls{aqm} mechanism which utilizes support vector machines to learn an optimal queuing policy for a shared buffer. 
+\cite{kim_deep_2019} use Deep Reinforcement Learning to develop an \gls{aqm} mechanism for IoT devices that works on the output queue of a switch. \cite{bisoy_design_2017} use \gls{rl} to build an \gls{aqm} algorithm for shared buffers. \cite{lin_kemy_2015} use a custom optimization approach that relies on an offline greedy algorithm which finds optimal rules for an \gls{aqm} that fulfills a certain reward function. 
 
 Unlike our proposed approach, these works' aim is not fingerprinting each flow but instead they optimize the overall queue that is shared by flows. In our work we focus on fingerprinting each flow and providing the optimal queuing behavior for each flow individually. This direction has, to our knowledge, not been explored so far. 
 
-Besides \gls{aqm}, Deep \gls{rl} has proven to be successful in several other domains of networking such as Congestion Control \cite{jay_deep_2019,bachl_rax_2019}, Traffic Engineering \cite{xu_experience-driven_2018} and Intelligent Packet Sampling for saving computational resources \cite{bachl_sparseids_2020}. 
+%Besides \gls{aqm}, Deep \gls{rl} has proven to be successful in several other domains of networking such as Congestion Control \cite{jay_deep_2019,bachl_rax_2019}, Traffic Engineering \cite{xu_experience-driven_2018} and Intelligent Packet Sampling for saving computational resources \cite{bachl_sparseids_2020}. 
 
 \section{Concept}
 \label{sec:concept}
@@ -97,16 +99,14 @@ Besides \gls{aqm}, Deep \gls{rl} has proven to be successful in several other do
 %\end{figure}
 
 If the buffer for a flow is too small, a flow cannot achieve the full bandwidth. On the other side, if the buffer is too large, the flow can achieve the full bandwidth but a standing queue exists, which causes unnecessary delay.  
-
 %For the popular \gls{cca} \textit{New Reno}, the buffer size that is necessary in a fair queuing setting is one \gls{bdp}, meaning $\textit{speed}\times\textit{delay}$. This is because its multiplicative decrease factor is $0.5$, meaning that after packet loss, the congestion window is halved. For other \glspl{cca} like \textit{Cubic} \cite{ha_cubic:_2008}, the multiplicative decrease factor is $0.7$, meaning that the congestion window is reduced to 70\% of its previous value upon packet loss. This means that the minimum buffer size required to achieve full throughput for a Cubic flow is $\left(\frac{1}{0.7}-1\right)\times \textit{BDP}$, which is around 43\% of the \gls{bdp} and thus less than for New Reno. That means the minimum required buffer size, among other factors, depends on the \gls{cca} and specifically the \gls{cca}'s multiplicative decrease factor. To reduce packet loss and standing queues we propose an adaptive fair \gls{aqm} that learns the available bandwidth, \gls{rtt} and the underlying \gls{cca} of a flow to adjust the buffer optimally. 
-
 Because the optimal buffer size for many \glspl{cca} depends on the \gls{bdp} and thus on the bandwidth and the delay (\gls{rtt}), for example, a flow only having half the \gls{rtt} of another one only needs half its buffer size to achieve full bandwidth. 
 
-To learn an optimal \gls{aqm} policy, we specify a reward function, which the \gls{ml} based \gls{aqm} should learn to optimize for each flow in a \gls{rl} fashion. A simple and effective reward function is for example $\textit{Reward} = \textit{bandwidth}-\alpha\times\textit{queue size}$.
+To learn an optimal \gls{aqm} policy, we specify a reward function, which the \gls{ml} based \gls{aqm} should learn to optimize for each flow using \gls{rl}. A simple and effective reward function is for example $\textit{Reward} = \textit{bandwidth}-\alpha\times\textit{queue size}$. In this reward function, the choosable parameter $\alpha$ specifies the tradeoff between the bandwidth and the buffer size. With $\alpha$ going to zero, the optimum policy approaches the one in which the buffer size is large enough that a flow never underutilizes the link but at the same time the buffer is never going to be larger than necessary if this doesn't provide a benefit in throughput. 
+%Alternatively, the delay could be used instead of the queue size because it is more closely related to \gls{qoe}. However, the delay that is caused by a certain queue length depends on the current link speed. This means that using delay would make the reward function more variable, depending on the current link speed. 
 
-In this reward function, the choosable parameter $\alpha$ specifies the tradeoff that is chosen between the bandwidth and the buffer size. With $\alpha$ going to zero, the optimum policy approaches the one in which the buffer size is large enough that a flow never underutilizes the link but at the same time the buffer is never going to be larger than necessary if this doesn't provide a benefit in throughput. Alternatively, the delay could be used instead of the queue size because it is more closely related to \gls{qoe}. However, the delay that is caused by a certain queue length depends on the current link speed. This means that using delay would make the reward function more variable, depending on the current link speed. 
-
-Our \gls{ml} system uses the above reward function to learn the optimal behavior. \gls{ours} outputs the optimal buffer size of which it thinks that it maximizes the reward function when receiving a packet. As the input for this decision we use the following features, which are updated continuously when receiving/sending a packet: 
+%Our \gls{ml} system uses the above reward function to learn the optimal behavior. \gls{ours} outputs the optimal buffer size of which it thinks that it maximizes the reward function when receiving a packet. 
+As the input for the neural network we use the following features, which are updated continuously when receiving/sending a packet at the queue: 
 \begin{itemize*}
 \item queue size
 \item standard deviation of the queue size 
@@ -120,12 +120,13 @@ We do not use these features directly because this could result in large, sponta
 %This means that without any smoothening, large instability would occur. 
 Thus, instead we use 10 exponentially weighted averages of each feature with weights of $2^{-4}$, $2^{-5}$, ... , $2^{-13}$.
 % The advantage of using exponentially weighted averages is that they do not occupy any space in memory except for their own values. This is opposed to regular moving averages, which have to keep the entire window of data in memory. For example, for a regular weighted average of window size 1000, the last 1000 data points have to be kept in memory at any time, leading to a large consumption of memory. 
-
 %One difficulty is to get an exponentially moving average for the rate of incoming/outgoing packets. Instead we compute the exponentially moving average of the interarrival times of incoming packets and the interdeparture times of outgoing packets. We then invert this number to get the rate. An issue with this approach is that numeric instability and division by zero errors can occur using this approach. Thus, we only use the exponential average with a weight of $2^{-n}$ after at least $n$ packets have arrived. Otherwise we set it to zero. We did this inversion because we saw that using the averages of interarrival/interdeparture times led to slower learning than using the rates. This is because if only the interarrival/interdeparture times are given, the neural network also has to learn the additional step of inverting them, making the learning more time-consuming. 
+We thus get a vector of $6\times 10 = 60$ features at each point in time. The features are fed into a neural network which has one output: The deemed optimal queue size.  
 
-Using these features gives us a feature vector of $6\times 10 = 60$ features at each point in time. The features are fed into a neural network which has one output: The deemed optimal queue size.  
-
-We implement \gls{ours} in the network simulator ns-3 and integrate Pytorch's C++ API into ns-3 for the \gls{dl}. All our code runs on the CPU. For the \gls{dl}, we used a fully connected neural network consisting of an input layer, three layers of 256 neurons which each have the leaky ReLU function applied and finally an output layer which has an output size of 1. For the learning we chose gradient descent with a learning rate of $0.01$. To save computational resources, how often our \gls{dl} logic runs and outputs the optimal buffer size, is a configurable parameter. The most fine-grained would be to let the \gls{dl} run for each packet that is received. However, this would be a computational waste and thus, by default, we only let the \gls{dl} run for every 10th packet. Other sampling intervals can be configured. Also, an option would be to not let the \gls{dl} run every $n$th packet but every $x$ milliseconds. 
+%We implement \gls{ours} in the network simulator ns-3 and integrate Pytorch's C++ API into ns-3 for the \gls{dl}. For the \gls{dl}, we used a fully connected neural network consisting of an input layer, three layers of 256 neurons which each have the leaky ReLU function applied and finally an output neuron. 
+%
+%For the learning we chose gradient descent with a learning rate of $0.01$. 
+%To save computational resources, how often our \gls{dl} logic runs and outputs the optimal buffer size, is a configurable parameter. The most fine-grained would be to let the \gls{dl} run for each packet that is received. However, this would be a computational waste and thus, by default, we only let the \gls{dl} run for every 10th packet. Other sampling intervals can be configured. Also, an option would be to not let the \gls{dl} run every $n$th packet but every $x$ milliseconds. 
 
 %For the simulations we randomly draw a bandwidth (5 to 25\,Mbit/s), a delay (5 to 25\,ms) and duration (3.75\,ms to 6.25\,ms) and a \gls{cca} (New Reno or BIC \cite{lisong_xu_binary_2004}). We chose these ranges of bandwidths and delays so that the neural network encounters flows with vastly different characteristics and has to learn to deal with them. We use New Reno because it is one of the oldest, most widely deployed \glspl{cca} and BIC because it is similar to Cubic, which is the default in Linux, Windows and most other OSs currently. We cannot use Cubic itself because there is no stable Cubic implementation in ns-3 currently. 
 
@@ -134,21 +135,22 @@ We implement \gls{ours} in the network simulator ns-3 and integrate Pytorch's C+
 %For the simulations we use two hosts that are directly connected to each other. We also experimented initially with a switch connecting these hosts but this made the simulation significantly slower. Thus we made the simulation as simple as possible and implemented our \gls{aqm} in front of the bottleneck link that connects the sender to the receiver. For all other buffers we use a FIFO queue with a buffer of 100 packets (the default). 
 
 \section{Offline Learning}
+\label{sec:offlineLearning}
 
-First, we implement an \gls{ml} system that is capable of learning an optimal queuing policy in a simulator. The idea is that in an ideal setting training is faster. After training in a simulator, the finished neural network can be deployed in a real production setting. 
-
-The training procedure involves the following steps:
+First, we implement an \gls{ml} system that is capable of learning an optimal queuing policy in a simulator. The idea is that in an ideal setting training is faster. After training in a simulator, the finished neural network can be deployed in a real production setting. The training procedure involves the following steps:
 \begin{enumerate}[wide, labelwidth=!, labelindent=0pt]
-\item Draw a random sample of 20 bandwidths, delays, \gls{cca} and flow durations.
+\item Draw a random sample of bandwidths, delays, \gls{cca} and flow durations.
 \item Simulate each flow concurrently, compute the feature vector continuously and let the neural network output its optimal buffer size each time a new packet arrives. 
-\item During each flow, at a random time between 0 and half the flow length in seconds, perform the experiment: Fork the simulation process for each flow and continue one simulation with the current buffer size $+1$ packet and one with the current buffer size $-1$ packet until the end of the flow. This procedure is essentially \textit{A/B testing}.  
+\item During each flow, at a random time between 0 and half the flow length in seconds, perform the experiment: Fork the simulation process for each flow and continue one simulation with the current buffer size $+1$ packet (option A) and one with the current buffer size $-1$ packet (option B) until the end of the flow. This procedure is commonly called \textit{A/B testing}.  
 \item Wait until all flows are finished
 \item Check for each flow which of the two versions performed better ($+1$ or $-1$) regarding the reward function.
-\item Update the neural network so that it learns to output the better buffer size when being fed the inputs as they were at the time at which the experimentation started. Specifically, we compute the \gls{mae} between the output of the neural network and the desired output (the one that performed better in the experiment) for the whole batch of 20 results.
+\item Update the neural network so that it learns to output the better buffer size when being fed the inputs as they were at the time at which the experimentation started.
+%Specifically, we compute the \gls{mae} between the output of the neural network and the desired output (the one that performed better in the experiment).
 \item Start the next iteration. 
 \end{enumerate}
 
-During deployment, the trained neural network is used but the experiment step is skipped. We chose to run 20 simulations concurrently since our computers have 40 CPUs and every simulation is split in two at the time of the experiment when each simulation process is forked. Thus with 20 simulations we fully utilize the 20 CPUs. This implies that the batch size used for the \gls{dl} is 20. 
+During deployment, the trained neural network is used and the experiment step is skipped. 
+%We chose to run 20 simulations concurrently since our computers have 40 CPUs and every simulation is split in two at the time of the experiment when each simulation process is forked. Thus with 20 simulations we fully utilize the 20 CPUs. This implies that the batch size used for the \gls{dl} is 20. 
 
 \subsection{$\alpha=0.01$}
 
@@ -158,34 +160,37 @@ During deployment, the trained neural network is used but the experiment step is
 %\label{fig:offlineTraining}
 %\end{figure}
 
-When performing offline learning with the tradeoff parameter $\alpha=0.01$, the neural network first starts with a prediction that is close to 0 (due to the initialization of neural network weights). During the first couple of thousand training flows, it increases its output and approaches what appears to be the buffer size that works best on average (slightly higher than 15). Then the neural network gradually starts understanding and differentiating different flows and learns custom policies for them. After around 250000 flows, the output appears to be stable and doesn't change anymore. There's one noticeable outlier at around 120000 flows. This appears to be some instability that can commonly occur in the early stages of neural network training but which has no significance for the training process since it resumes normally after the outlier. 
+%When performing offline learning with the tradeoff parameter $\alpha=0.01$, the neural network first starts with a prediction that is close to 0 (due to the initialization of neural network weights). During the first couple of thousand training flows, it increases its output and approaches what appears to be the buffer size that works best on average (slightly higher than 15). Then the neural network gradually starts understanding and differentiating different flows and learns custom policies for them. After around 250000 flows, the output appears to be stable and doesn't change anymore. There's one noticeable outlier at around 120000 flows. This appears to be some instability that can commonly occur in the early stages of neural network training but which has no significance for the training process since it resumes normally after the outlier. 
+
+For offline learning with $\alpha=0.01$, the neural network needs around 250000 training flows to converge. 
 
 \begin{figure}[h]
+\vspace{0.05in}
 \includegraphics[width=\columnwidth]{{"figures/local_ns-allinone-3.30.1_ns-3.30.1_results_RLQueueDisc_queueTraces_2020-6-6-10-24-18_81000.weights_cc_0_bw_25.000000_delay_15.000000_small"}.pdf}
-\caption{Showing the maximum queue length and queue length of a New Reno flow controlled by \gls{ours} (offline training, $\alpha=0.01$) at the bottleneck with a 25\,Mbit/s link and a delay of 15\,ms. The queue never becomes empty and also never forms a standing queue.}
+\caption{New Reno flow controlled by \gls{ours} (offline training, $\alpha=0.01$); link speed: 25\,Mbit/s; delay: 15\,ms. The queue never becomes empty and also never forms a standing queue.}
 \label{fig:exampleRenoLargeBw}
 \end{figure}
 
 \autoref{fig:exampleRenoLargeBw} shows a New Reno flow at a link with a bottleneck bandwidth of 25\,Mbit/s and a delay of 15\,ms controlled by \gls{ours} after it is fully trained. In the beginning, the maximum queue length that \gls{ours} allows is around 15 packets. After less than a second, when the \gls{dl} learns to understand the flow's congestion control, the bottleneck delay and bandwidth, it understands that a larger maximum queue is needed and raises its prediction to around 35 packets. It stays at this value until the end. The queue never becomes empty and no standing queue is formed at any point, which means that \gls{ours} achieved its goal.
 
-\begin{figure}[h]
-\includegraphics[width=\columnwidth]{{"figures/local_ns-allinone-3.30.1_ns-3.30.1_results_RLQueueDisc_queueTraces_2020-6-6-10-24-18_81000.weights_cc_0_bw_6.010101_delay_15.000000_small"}.pdf}
-\caption{Showing the maximum queue length and queue length of a New Reno flow controlled by \gls{ours} (offline training, $\alpha=0.01$) at the bottleneck with a 6\,Mbit/s link and a delay of 15\,ms. The queue never becomes empty and also never forms a standing queue.}
-\label{fig:exampleRenoSmallBw}
-\end{figure}
+%\begin{figure}[h]
+%\includegraphics[width=\columnwidth]{{"figures/local_ns-allinone-3.30.1_ns-3.30.1_results_RLQueueDisc_queueTraces_2020-6-6-10-24-18_81000.weights_cc_0_bw_6.010101_delay_15.000000_small"}.pdf}
+%\caption{Maximum queue length and queue length of a New Reno flow controlled by \gls{ours} (offline training, $\alpha=0.01$) with a 6\,Mbit/s link and a delay of 15\,ms. The queue never becomes empty and also never forms a standing queue.}
+%\label{fig:exampleRenoSmallBw}
+%\end{figure}
 
-\autoref{fig:exampleRenoSmallBw} shows a New Reno flow at a link with a bottleneck bandwidth of 6\,Mbit/s and a delay of 15\,ms controlled by \gls{ours}. In the beginning, the maximum queue length that \gls{ours} allows is around 15 packets, like for \autoref{fig:exampleRenoLargeBw}. Then, however, it behaves differently than the flow before on the link with a larger bandwidth: \gls{ours} learns that the bottleneck link has a smaller bandwidth and thus, a smaller buffer is sufficient. Thus, after less than a second, it learns that the optimal maximum queue size is around 10 packets. Then it keeps that buffer size until the end of the flow. Again, the queue never becomes empty for a prolonged time and no standing queue forms. 
+%\autoref{fig:exampleRenoSmallBw} shows a New Reno flow at a link with a bottleneck bandwidth of 6\,Mbit/s and a delay of 15\,ms controlled by \gls{ours}. In the beginning, the maximum queue length that \gls{ours} allows is around 15 packets, like for \autoref{fig:exampleRenoLargeBw}. Then, however, it behaves differently than the flow before on the link with a larger bandwidth: \gls{ours} learns that the bottleneck link has a smaller bandwidth and thus, a smaller buffer is sufficient. Thus, after less than a second, it learns that the optimal maximum queue size is around 10 packets. Then it keeps that buffer size until the end of the flow. Again, the queue never becomes empty for a prolonged time and no standing queue forms. 
 
 \begin{figure}[h]
 \includegraphics[width=\columnwidth]{{"figures/local_ns-allinone-3.30.1_ns-3.30.1_results_RLQueueDisc_queueTraces_2020-6-6-10-24-18_81000.weights_cc_1_bw_25.000000_delay_15.000000_small"}.pdf}
-\caption{Showing the maximum queue length and queue length of a BIC flow controlled by \gls{ours} (offline training, $\alpha=0.01$) at the bottleneck with a 25\,Mbit/s link and a delay of 15\,ms. The queue never becomes empty and also never forms a standing queue.}
+\caption{BIC flow controlled by \gls{ours} (offline training, $\alpha=0.01$); link speed: 25\,Mbit/s; delay: 15\,ms. The queue never becomes empty and also never forms a standing queue.}
 \label{fig:exampleBicLargeBw}
 \end{figure}
 
-\autoref{fig:exampleBicLargeBw} shows that \gls{ours} learned that the flow uses the BIC \gls{cca} and thus needs a smaller buffer: For the same scenario with New Reno (\autoref{fig:exampleRenoLargeBw}) \gls{ours} output a queue length of around 35. For the same scenario with a BIC controlled flow, it chooses the optimal maximum queue length as around 12 packets. This demonstrates that \gls{ours} learned to distinguish different congestion controls only by looking at the pattern of a flow. 
+\autoref{fig:exampleBicLargeBw} shows that \gls{ours} learned that the flow uses BIC and thus needs a smaller buffer: For the same scenario with New Reno (\autoref{fig:exampleRenoLargeBw}) \gls{ours} output a queue length of around 35. For the same scenario with a BIC controlled flow, it chooses the optimal maximum queue length as around 12 packets. This demonstrates that \gls{ours} learned to distinguish different congestion controls only by looking at the pattern of a flow. 
 
 \begin{table}[h]
-\caption{Correlation between bandwidth/delay of the link and output buffer size for a tradeoff of $0.1$ with offline learning. We vary bandwidth between 5 and 25\,Mbit/s and delay between 5 and 25\,ms for both \glspl{cca}. When bandwidth is varied, delay is kept at its mean (15\,ms) and vice versa.} \label{tab:corrOfflineSmallAlpha}
+\caption{Correlation between bandwidth/delay of the link and output buffer size; tradeoff: $0.1$; offline learning. Link speed: 5-25\,Mbit/s; delay: 5-25\,ms. When bandwidth is varied, delay is kept at its mean (15\,ms) and vice versa.} \label{tab:corrOfflineSmallAlpha}
 \centering
 \begin{tabular}{lrr} \toprule
 \gls{cca} & bandwidth & delay \\ \midrule
@@ -199,20 +204,9 @@ To have a quantifiable measure of the success of \gls{ours}, we compute the corr
 
 The correlations imply that, when increasing the bandwidth, the neural network outputs a larger maximum queue size, because a larger buffer is needed for New Reno and BIC, when the bandwidth is larger. However, learning the relationship is not difficult: In fact, the neural network would simply need to learn to use the identity function to map the input feature that encodes the incoming or outgoing data rate to the output (the output maximum buffer size). 
 
-The results also show that increasing the delay increases the output (maximum buffer size) of the neural network. This is more interesting than for the bandwidth since no input feature directly encodes the delay. Thus, the neural network must observe the pattern of the \gls{cca}, estimate the \gls{rtt} and output the suitable maximum queue size. The right column of \autoref{tab:corrOfflineSmallAlpha} shows that there is clearly a linear relationship between the delay and the output maximum queue size as the correlation is close to 1 (or 100\%). 
+The results also show that increasing the delay increases the output (maximum buffer size) of the neural network. However, no feature directly encodes the delay. Thus, the neural network must observe the pattern of the \gls{cca}, estimate the \gls{rtt} and output the suitable maximum queue size. The right column of \autoref{tab:corrOfflineSmallAlpha} shows that there is clearly a linear relationship between the delay and the output maximum queue size as the correlation is close to 1 (or 100\%). 
 
-\begin{table}[h]
-\caption{The average maximum queue length (in packets) output by the neural network after offline learning (tradeoff $0.01$) when averaging over flows with varying bandwidth/delay like in \autoref{tab:corrOfflineSmallAlpha}.} \label{tab:avgOfflineSmallAlpha}
-\centering
-\begin{tabular}{lr} \toprule
-\gls{cca} & avg.~max.~queue length \\ \midrule
-New Reno & 22 \\
-BIC & 8 \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\autoref{tab:avgOfflineSmallAlpha} shows that the average output maximum queue size is more than double for New Reno than for BIC. This shows that the neural network also learned to distinguish between these two \glspl{cca}. Since there are no features that directly indicate the \gls{cca}, the neural network must have learned these by combining the other features and observing distinct behavior for New Reno and BIC. This is expected, since BIC has a different multiplicative decrease factor than New Reno ($0.7$ vs $0.5$) the neural network should learn to output different maximum queue sizes for these two. Specifically, we would expect BIC to need a smaller buffer as its decrease is smaller, thus requiring a smaller buffer. 
+The average output maximum queue size is more than double for New Reno (22 packets) than for BIC (8 packets). This shows that the neural network also learned to distinguish between these two \glspl{cca}. Since there are no features that directly indicate the \gls{cca}, the neural network must have learned these by combining the other features and observing distinct behavior for New Reno and BIC. This is expected, since BIC has a different multiplicative decrease factor than New Reno ($0.7$ vs $0.5$) the neural network should learn to output different maximum queue sizes for these two. Specifically, we would expect BIC to need a smaller buffer as its decrease is smaller, thus requiring a smaller buffer. 
 
 %\begin{figure*}[h]
 %\centering
@@ -246,18 +240,18 @@ BIC & 8 \\
 %\label{fig:offlineTrainingLargeAlpha}
 %\end{figure}
 
-As for the smaller alpha, the neural network converges quickly after a couple of 10000 flows. 
+As for the smaller alpha, the neural network converges after a couple of 100000 flows. 
 
 \begin{figure}[h]
 \includegraphics[width=\columnwidth]{{"figures/local_ns-allinone-3.30.1_ns-3.30.1_results_RLQueueDisc_queueTraces_2020-6-4-15-39-25_108000.weights_cc_0_bw_6.010101_delay_15.000000_small"}.pdf}
-\caption{Showing the maximum queue length and queue length of a New Reno flow controlled by \gls{ours} (offline training, $\alpha=10$) at the bottleneck with a 6\,Mbit/s link and a delay of 15\,ms. The queue occasionally becomes empty which is intended as with the higher tradeoff $\alpha$, \gls{ours} tries to favor a small queue more than high throughput.}
+\caption{New Reno flow controlled by \gls{ours} (offline training, $\alpha=10$); link speed: 6\,Mbit/s; delay: 15\,ms. The queue occasionally becomes empty because with a higher tradeoff $\alpha$, \gls{ours} favors a small queue more than high throughput.}
 \label{fig:exampleRenoSmallBwLargeAlpha}
 \end{figure}
 
-\autoref{fig:exampleRenoSmallBwLargeAlpha} shows a flow under the same conditions like the one in \autoref{fig:exampleRenoSmallBw}. The flow in \autoref{fig:exampleRenoSmallBwLargeAlpha} however, has a smaller buffer and sometimes the queue becomes empty, which never happens for the flow in \autoref{fig:exampleRenoSmallBw}. This shows that the parameter $\alpha$ has a clear influence on the learning process and that with a larger $\alpha$, throughput is sacrificed to keep the queue smaller. 
+The flow in \autoref{fig:exampleRenoSmallBwLargeAlpha} gets assigned a small buffer and sometimes the queue becomes empty, which never happens for the flow in \autoref{fig:exampleBicLargeBw}. This shows that the parameter $\alpha$ has a clear influence on the learning process and that with a larger $\alpha$, throughput is sacrificed to keep the queue smaller. 
 
 \begin{table}[h]
-\caption{Correlation between bandwidth/delay of the link and output buffer size for a tradeoff of $10$ with offline learning. We vary bandwidth between 5 and 25\,Mbit/s and delay between 5 and 25\,ms for both \glspl{cca}. When bandwidth is varied, delay is kept at its mean (15\,ms) and vice versa.} \label{tab:corrOfflineLargeAlpha}
+\caption{Correlation between bandwidth/delay of the link and output buffer size; tradeoff: $10$; offline learning. Link speed: 5-25\,Mbit/s; delay: 5-25\,ms. When bandwidth is varied, delay is kept at its mean (15\,ms) and vice versa.} \label{tab:corrOfflineLargeAlpha}
 \centering
 \begin{tabular}{lrr} \toprule
 \gls{cca} & bandwidth & delay \\ \midrule
@@ -267,52 +261,29 @@ BIC & 75.4\% & 62\% \\
 \end{tabular}
 \end{table}
 
-\begin{table}[h]
-\caption{The average maximum queue length (in packets) output by the neural network after offline learning (tradeoff $10$) when averaging over flows with varying bandwidth/delay like in \autoref{tab:corrOfflineLargeAlpha}.} \label{tab:avgOfflineLargeAlpha}
-\centering
-\begin{tabular}{lr} \toprule
-\gls{cca} & avg.~max.~queue length \\ \midrule
-New Reno & 13 \\
-BIC & 5 \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-Results in \autoref{tab:corrOfflineLargeAlpha} and \autoref{tab:corrOfflineLargeAlpha} show that for a larger $\alpha$ \gls{ours} still works as expected and that the average output maximum queue size is smaller, as expected. 
+\autoref{tab:corrOfflineLargeAlpha} shows that correlations are still very high albeit a bit lower than for $\alpha=10$ (\autoref{tab:corrOfflineSmallAlpha}). The average buffer size is 13 packets for New Reno and BIC 5 for BIC. This is significantly smaller than the values for the smaller $\alpha$, meaning that with a larger tradeoff parameter, the neural network learns that smaller buffers are better on average, which is exactly what is expected. 
 
 \section{Online Learning}
 
-In contrast to offline learning, online learning enables to train in deployment. This makes it possible to adapt the behavior slowly over time (over a time span of month or years), for example if new \glspl{cca} emerge. Furthermore, being able to training with real flows is more realistic than training only with simulated flows in a simulation. 
+In contrast to offline learning, online learning enables to train in deployment. This makes it possible to adapt the behavior slowly over time (over a time span of months or years), for example if new \glspl{cca} emerge. Furthermore, being able to training with real flows is more realistic than training only with simulated flows in a simulation. 
 
 The major change is that for online learning, A/B testing, like for the offline learning, is not possible: In the real world, each time the buffer size is updated for a flow, this is a definite decision. It is not possible to artificially ``split'' a flow like in the simulator and check if a larger or a smaller buffer would have been a better choice. Another analogy for this is that for online learning, we have to unveil what happened to Schrödinger's cat (if it is dead or not), when we launch the experiment, which buffer size is better. For the offline learning, on the other side, we can try out both versions in the simulator and continue one reality with the cat being dead (maximum buffer size $-1$) and the other one with the cat being alive (maximum buffer size $+1$). 
 
 To accommodate for this difference from offline learning, for online training we need two neural networks: 
-\begin{itemize}
-\item An actor network, which outputs the optimal buffer size at each time step.
-\item A critic network, which outputs the reward that it predicts is going to be achieved when keeping the current buffer size until the end of the flow. 
-\end{itemize}
-Both of these neural networks have the same number of layers and neurons. 
+\begin{itemize*}
+\item An \textit{actor network}, which outputs the optimal buffer size at each time step.
+\item A \textit{critic network}, which outputs the reward that it predicts is going to be achieved when keeping the current buffer size until the end of the flow. 
+\end{itemize*}
 
-The training procedure involves the following steps:
-\begin{enumerate}[wide, labelwidth=!, labelindent=0pt]
-\item Draw a random sample of 40 bandwidths, delays, \gls{cca} and flow durations.
-\item Simulate each flow concurrently, compute the feature vector continuously and let the neural network output its optimal buffer size each time a new packet arrives. 
-\item During each flow, at a random time between 0 and the flow length in seconds divided by 2, perform the experiment: Continue the simulation either with the current buffer size incremented by 1 or decremented by 1 until the end of the flow.
-\item Wait until all flows are finished
-\item Check for each flow if its decision was better than the expectation of the critic network.
-\item Update the actor neural network to output the better buffer size when being fed the inputs as they were at the time at which the experimentation started. For example, if the experiment was with buffer size $-1$ but this yielded worse results than expected, this implies that the buffer size $+1$ would have been better. As for offline training we use the \gls{mae}, averaging over the results of the whole batch of 40 flows. 
-\item Update the critic neural network by using the input vector that was recorded at the time at which the experiment started and the reward that was achieved as the label. Specifically, \gls{mse} is used as the loss function, averaging over the whole batch of 40 flows. 
-\item Start the next iteration. 
-\end{enumerate}
-
-For online learning we run 40 simulations concurrently since we have 40 CPUs and online learning does not split each simulation into two as it happens for offline learning. The batch size for the \gls{dl} is thus 40. 
+The training procedure is identical to the one used for offline learning \autoref{sec:offlineLearning} except that the critic network is used to determine if the choice of the buffer size was better or worse than expected. 
+%For online learning we run 40 simulations concurrently since we have 40 CPUs and online learning does not split each simulation into two as it happens for offline learning. The batch size for the \gls{dl} is thus 40. 
 
 \subsection{$\alpha=10$}
 
 Compared to offline learning, it takes significantly more network flows for training to converge when doing online learning. This is not surprising since for online training there are two neural networks involved and there is inherently more noise: For the offline training, we can perform A/B testing and thus the reward given to the neural network is always correct. On the other side, for online learning, the reward depends also on the output of the critic network and the critic network doesn't have to be 100\% correct when it outputs the reward that it expected. Thus, the more noisy reward for online training makes it converge more slowly. Specifically, this means that first, the neural network learns that a buffer size of around 10 is optimal on average for all flows and only very slowly (when compared to the offline learning) it learns to fingerprint and differentiate the different flows with different conditions such as different link speed, different delay and different \gls{cca}. 
 
 \begin{table}[h]
-\caption{Correlation between bandwidth/delay of the link and output buffer size for a tradeoff of $10$ with online learning. We vary bandwidth between 5 and 25\,Mbit/s and delay between 5 and 25\,ms for both \glspl{cca}. When bandwidth is varied, delay is kept at its mean (15\,ms) and vice versa.} \label{tab:corrOnlineLargeAlpha}
+\caption{Correlation between bandwidth/delay of the link and output buffer size; tradeoff: $10$; online learning. Link speed: 5-25\,Mbit/s; delay: 5-25\,ms. When bandwidth is varied, delay is kept at its mean (15\,ms) and vice versa.} \label{tab:corrOnlineLargeAlpha}
 \centering
 \begin{tabular}{lrr} \toprule
 \gls{cca} & bandwidth & delay \\ \midrule
@@ -322,54 +293,44 @@ BIC & 72.9\% & 73.6\% \\
 \end{tabular}
 \end{table}
 
-\begin{table}[h]
-\caption{The average maximum queue length (in packets) output by the neural network after online learning (tradeoff $\alpha=10$) when averaging over flows with varying bandwidth/delay like in \autoref{tab:corrOnlineLargeAlpha}.} \label{tab:avgOnlineLargeAlpha}
-\centering
-\begin{tabular}{lr} \toprule
-\gls{cca} & avg.~max.~queue length \\ \midrule
-New Reno & 14 \\
-BIC & 8 \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\autoref{tab:corrOnlineLargeAlpha} and \autoref{tab:avgOnlineLargeAlpha} show that online learning also learns the expected mapping between \gls{cca}, bandwidth and delay to buffer size, albeit training takes longer and results are more noisy than for online learning as can be seen in the lower correlations when comparing \autoref{tab:avgOfflineLargeAlpha} with \autoref{tab:avgOnlineLargeAlpha}
+\autoref{tab:corrOnlineLargeAlpha} shows that online learning also learns the expected mapping between \gls{cca}, bandwidth and delay to buffer size, albeit training takes longer and results are more noisy than for online learning as can be seen in the lower correlations when comparing \autoref{tab:corrOfflineLargeAlpha} with \autoref{tab:corrOnlineLargeAlpha}. The average buffer size is 14 for New Reno and 8 for BIC, which is very similar to the results of the offline learning. This demonstrates that online learning learns similar policies compared to offline learning. 
 
 \section{Comparing with other queue managers}
 
-In this section we compare the behavior of \gls{ours} to the behavior of other popular fair queue discs: \begin{itemize}
-\item fq \cite{dumazet_pkt_sched:_2013}, which is a common fair queue disc for Linux which has a drop tail buffer of fixed size for each flow (Fifo) with two different buffer sizes: 100 and 1000, which both are common default buffer sizes. 
-\item FqCoDel \cite{taht_flow_2018}, which uses fq but doesn't manage each queue with a drop tail buffer but instead with the CoDel algorithm. 
-\end{itemize}
+In this section we compare the behavior of \gls{ours} to the behavior of other popular fair queue discs: \begin{itemize*}
+\item \textit{fq} \cite{dumazet_pkt_sched:_2013}, which is a common fair queue disc for Linux which has a drop tail buffer of fixed size for each flow (Fifo) with two different buffer sizes: 100 and 1000, which both are common default buffer sizes. 
+\item \textit{FqCoDel} \cite{taht_flow_2018}, which uses fq but manages each queue with the \textit{CoDel} algorithm. 
+\end{itemize*}
 
 \begin{figure}[h]
 \includegraphics[width=\columnwidth]{{"figures/local_ns-allinone-3.30.1_ns-3.30.1_results_RLQueueDisc_queueTraces_2020-6-6-10-24-18_81000.weights_cc_1_bw_15.000000_delay_5.000000_small"}.pdf}
-\caption{Showing the maximum queue length and queue length of a BIC flow controlled by \gls{ours} (offline training, $\alpha=0.01$) at the bottleneck with a 15\,Mbit/s link and a delay of 5\,ms. The queue never becomes empty and also never forms a standing queue.}
+\caption{BIC flow controlled by \gls{ours} (offline training, $\alpha=0.01$); link speed:15\,Mbit/s; delay: 5\,ms. The queue never becomes empty and also never forms a standing queue.}
 \label{fig:exampleBicOursNice}
 \end{figure}
 
 %\begin{figure}[h]
 %\includegraphics[width=\columnwidth]{{"figures/local_ns-allinone-3.30.1_ns-3.30.1_results_FifoQueueDisc_queueTraces_1000_cc_1_bw_15.000000_delay_5.000000"}.pdf}
-%\caption{Showing the maximum queue length and queue length of a Bic flow controlled by fq with a max queue of 1000 packets at the bottleneck with a 15\,Mbit/s link and a delay of 5\,ms.}
+%\caption{Maximum queue length and queue length of a Bic flow controlled by fq with a max queue of 1000 packets at the bottleneck with a 15\,Mbit/s link and a delay of 5\,ms.}
 %\label{fig:exampleBicfq1000}
 %\end{figure}
 %
 %\begin{figure}[h]
 %\includegraphics[width=\columnwidth]{{"figures/local_ns-allinone-3.30.1_ns-3.30.1_results_FifoQueueDisc_queueTraces_100_cc_1_bw_15.000000_delay_5.000000"}.pdf}
-%\caption{Showing the maximum queue length and queue length of a Bic flow controlled by fq with a max queue of 1000 packets at the bottleneck with a 15\,Mbit/s link and a delay of 5\,ms. A large standing queue of about 80 packets is kept starting from second 2.}
+%\caption{Maximum queue length and queue length of a Bic flow controlled by fq with a max queue of 1000 packets at the bottleneck with a 15\,Mbit/s link and a delay of 5\,ms. A large standing queue of about 80 packets is kept starting from second 2.}
 %\label{fig:exampleBicfq100}
 %\end{figure}
 
 \begin{figure}[h]
+\vspace{0.05in}
 \includegraphics[width=\columnwidth]{{"figures/local_ns-allinone-3.30.1_ns-3.30.1_results_FqCoDelQueueDisc_queueTraces_normal_cc_1_bw_15.000000_delay_5.000000_small"}.pdf}
-\caption{Showing the maximum queue length and queue length of a Bic flow controlled by FqCoDel at the bottleneck with a 15\,Mbit/s link and a delay of 5\,ms.}
+\caption{Bic flow controlled by FqCoDel; link speed: 15\,Mbit/s; delay: 5\,ms.}
 \label{fig:exampleBicFqCoDel}
 \end{figure}
 
 The comparison of \gls{ours} (\autoref{fig:exampleBicOursNice}) with FqCoDel (\autoref{fig:exampleBicFqCoDel}) shows that FqCoDel generally avoids a large standing queue but results in a very large spike in queued packets at the beginning of the flow. Thus, while CoDel was designed to avoid ``bufferbloat'' it actually induces a very large standing queue during the slow start phase of a flow. 
 
 \begin{table}
-\caption{Comparing the average throughput and maximum/average queue size over a large range of network conditions for New Reno and Bic. All results are the average of 100 experiments with delay ranging from 5 to 25\,ms (with bandwidth fixed at 15\,Mbit/s and of 100 experiments with bandwidth ranging from 5 to 25\,Mbit/s (with bandwidth fixed at 15\,ms). All experiments were conducted for both the New Reno and Bic \glspl{cca}. This gives a total of 400 experiments, over which the values are averaged.} \label{tab:comparison_others}
+\caption{Average throughput and maximum/average queue size for different \glspl{aqm}. Link speed: 5-25\,Mbit/s; delay: 5-25\,ms for both New Reno and Bic. When bandwidth is varied, delay is kept at its mean (15\,ms) and vice versa.} \label{tab:comparison_others}
 \centering
 \begin{tabular}{l r r r} \toprule
 & \multirow{2}{*}{avg. throughp.} & \multicolumn{2}{c}{queue size} \\
@@ -396,15 +357,15 @@ The systematic comparison (\autoref{tab:comparison_others}) between the differen
 %
 %Last, the choice of the \gls{dl} toolkit is important. We started with tensorflow's C++ API but found it very difficult to make it work together with ns-3 due to tensorflow's unusual build system. On the other side, Pytorch's C++ API was easily linkable to ns-3 and also didn't require to be compiled from scratch, which saved compilation time. 
 
-\section{Discussion}
+%\section{Discussion}
 
-The results show that \gls{ours} learns the optimal buffering behavior taking into account the tradeoff parameter $\alpha$. This allows to tune how much throughput is allowed to be sacrificed for a reduction of average queue size. The online learning worked comparable to the offline learning, however, the online learning can take significantly longer to converge. This is no surprise as for offline learning we can do A/B testing between buffer sizing and thus always know what the optimal buffer size is. On the other side, for online learning, the learning depends on the output of a second neural network (the critic). This adds additional noise to the learning process. A way to alleviate this could be to pre-train a model using offline learning and then refine this pretrained model with online learning in a live deployment. 
+%The results show that \gls{ours} learns the optimal buffering behavior taking into account the tradeoff parameter $\alpha$. This allows to tune how much throughput is allowed to be sacrificed for a reduction of average queue size. The online learning worked comparable to the offline learning, however, the online learning can take significantly longer to converge. This is no surprise as for offline learning we can do A/B testing between buffer sizing and thus always know what the optimal buffer size is. On the other side, for online learning, the learning depends on the output of a second neural network (the critic). This adds additional noise to the learning process. A way to alleviate this could be to pre-train a model using offline learning and then refine this pretrained model with online learning in a live deployment. 
 
-Our comparison to existing \gls{aqm} methods shows that \gls{ours} achieves more or about the same throughput as other existing methods while at least halving the average queue size. The maximum queue size is decreased even more sharply: It is less than one fourth of the one of fq with a queue of 100 and less than a sixth of the maximum queue of FqCoDel. This observation is somewhat surprising as FqCoDel is specifically designed to prevent unnecessary long queues. However, while CoDel's algorithm manages to work reasonably well for flows in the congestion avoidance phase, it interacts badly with flows in the slow start phase. This is because during slow start, most \glspl{cca} increase the data in flight exponentially, which leads to a very quick increase in the queue. The problem is that CoDel uses an interval of 100\,ms to adjust the queue. Thus, slow start has 100\,ms to grow the queue exponentially and arbitrarily high. Only after that CoDel starts gradually decreasing the queue. This is particularly problematic as a large fraction of flows already end before slow start is over \cite{jurkiewicz_flow_2020} and thus could suffer from FqCoDel's large queue size. For example, for the average maximum queue size of 155 packets of FqCoDel shown in \autoref{tab:comparison_others} this means that on a 15\,Mbit/s link, the queuing delay alone is 124\,ms and can be even higher for smaller \glspl{rtt} as then the exponential increase of slow start can be even faster. 
+%Our comparison to existing \gls{aqm} methods shows that \gls{ours} achieves more or about the same throughput as other existing methods while at least halving the average queue size. The maximum queue size is decreased even more sharply: It is less than one fourth of the one of fq with a queue of 100 and less than a sixth of the maximum queue of FqCoDel. This observation is somewhat surprising as FqCoDel is specifically designed to prevent unnecessary long queues. However, while CoDel's algorithm manages to work reasonably well for flows in the congestion avoidance phase, it interacts badly with flows in the slow start phase. This is because during slow start, most \glspl{cca} increase the data in flight exponentially, which leads to a very quick increase in the queue. The problem is that CoDel uses an interval of 100\,ms to adjust the queue. Thus, slow start has 100\,ms to grow the queue exponentially and arbitrarily high. Only after that CoDel starts gradually decreasing the queue. This is particularly problematic as a large fraction of flows already end before slow start is over \cite{jurkiewicz_flow_2020} and thus could suffer from FqCoDel's large queue size. For example, for the average maximum queue size of 155 packets of FqCoDel shown in \autoref{tab:comparison_others} this means that on a 15\,Mbit/s link, the queuing delay alone is 124\,ms and can be even higher for smaller \glspl{rtt} as then the exponential increase of slow start can be even faster. 
 
 %As our \gls{dl} system's features are only composed of exponentially weighted moving averages, little storage space is required by \gls{ours}. To be able to adjust the computational demand of \gls{ours}, it has the option to only execute the \gls{rl} logic every $n$th packet.
 
-We envision \gls{ours} being used on switches and routers close to the Internet's edge, as here usually the bottleneck links are and because network devices here only have to manage a rather small number of flows compared to the Internet's core. An interesting future direction of work could be to design and evaluate different reward functions, for example directly based on \gls{qoe}. 
+%We envision \gls{ours} being used on switches and routers close to the Internet's edge, as here usually the bottleneck links are and because network devices here only have to manage a rather small number of flows compared to the Internet's core. An interesting future direction of work could be to design and evaluate different reward functions, for example directly based on \gls{qoe}. 
 
 \bibliographystyle{IEEEtranS}
 \bibliography{reference}

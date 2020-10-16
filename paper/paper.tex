@@ -3,10 +3,10 @@
 \usepackage[english]{babel}
 \usepackage{blindtext}
 \usepackage{xcolor}
+\usepackage[utf8]{inputenc}
 
 \usepackage[nomain, toc, acronym]{glossaries}
 \usepackage{subfig}
-\usepackage{booktabs}
 \usepackage{hyperref}
 \usepackage{amsmath}
 \usepackage{amssymb}
@@ -283,7 +283,7 @@ Results in \autoref{tab:corrOfflineLargeAlpha} and \autoref{tab:corrOfflineLarge
 
 \section{Online Learning}
 
-In contrast to offline learning, online learning enables to train in deployment. This makes it possible to adapt the behavior slowly over time (over a time span of month or years), for example if new \glspl{cca} emerge. Furthermore, being able to training with real flows is more realistic than training only with simulated flows in a simulation. 
+In contrast to offline learning, online learning enables to train in deployment. This makes it possible to adapt the behavior slowly over time (over a time span of months or years), for example if new \glspl{cca} emerge. Furthermore, being able to training with real flows is more realistic than training only with simulated flows in a simulation. 
 
 The major change is that for online learning, A/B testing, like for the offline learning, is not possible: In the real world, each time the buffer size is updated for a flow, this is a definite decision. It is not possible to artificially ``split'' a flow like in the simulator and check if a larger or a smaller buffer would have been a better choice. Another analogy for this is that for online learning, we have to unveil what happened to Schrödinger's cat (if it is dead or not), when we launch the experiment, which buffer size is better. For the offline learning, on the other side, we can try out both versions in the simulator and continue one reality with the cat being dead (maximum buffer size $-1$) and the other one with the cat being alive (maximum buffer size $+1$). 
 
