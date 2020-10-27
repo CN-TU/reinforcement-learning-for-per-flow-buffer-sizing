@@ -40,22 +40,6 @@
 
 \section{Introduction}
 
-\begin{frame}{``Bufferbloat''}
-  \begin{itemize}
-  \item If queues in routers/switches too small: \textbf{Underutilization}
-  \item \textbf{Solution:} Make queues very \textbf{large} for maximum throughput!
-  \item \textbf{New problem:} Packets \textbf{wait} a long time (several seconds) in the queue: Bufferbloat
-  \end{itemize}
-\end{frame}
-
-\begin{frame}{CoDel}{Active Queue Management against Bufferbloat}
-  \begin{itemize}
-  \item Moving time window of 100\,ms
-  \item Queuing Delay \textbf{must be $<$ 5\,ms} once in each window
-  \item Otherwise: Drop packet(s)
-  \end{itemize}
-\end{frame}
-
 \begin{frame}{Fair Queuing}
   \begin{itemize}
   \item Separate each flow in separate queue
@@ -68,19 +52,35 @@
   \end{alertblock}
 \end{frame}
 
-\begin{frame}{\texttt{fq\_codel}}{Combining fair queuing with CoDel}
-  \begin{itemize}
-  \item State-of-the-art
-  \item Separate queues
-  \item Each queue managed by CoDel
-  \item Keeps each flow's queue $<$ 5\,ms
-  \item Linux implementation: \texttt{fq\_codel}
-  \pause
-  \end{itemize}
-  \begin{alertblock}{Inadequate interaction with Congestion Control:}
-	\textit{Cubic} doesn't achieve full throughput or keeps standing queue 
-  \end{alertblock}
-\end{frame}
+%\begin{frame}{``Bufferbloat''}
+%  \begin{itemize}
+%  \item If queues in routers/switches too small: \textbf{Underutilization}
+%  \item \textbf{Solution:} Make queues very \textbf{large} for maximum throughput!
+%  \item \textbf{New problem:} Packets \textbf{wait} a long time (several seconds) in the queue: Bufferbloat
+%  \end{itemize}
+%\end{frame}
+
+%\begin{frame}{CoDel}{Active Queue Management against Bufferbloat}
+%  \begin{itemize}
+%  \item Moving time window of 100\,ms
+%  \item Queuing Delay \textbf{must be $<$ 5\,ms} once in each window
+%  \item Otherwise: Drop packet(s)
+%  \end{itemize}
+%\end{frame}
+
+%\begin{frame}{\texttt{fq\_codel}}{Combining fair queuing with CoDel}
+%  \begin{itemize}
+%%  \item State-of-the-art
+%  \item Separate queues
+%  \item Each queue managed by CoDel
+%  \item Keeps each flow's queue $<$ 5\,ms
+%  \item Linux implementation: \texttt{fq\_codel}
+%  \pause
+%  \end{itemize}
+%  \begin{alertblock}{Inadequate interaction with Congestion Control:}
+%	\textit{Cubic} doesn't achieve full throughput or keeps standing queue 
+%  \end{alertblock}
+%\end{frame}
 
 \section{Concept}
 
@@ -99,34 +99,35 @@
   \includegraphics[height=0.9\textheight,keepaspectratio]{figures/cocoa_illustration_perfect.pdf}
 \end{frame}
 
-\begin{frame}{\texttt{cocoa} qdisc\footnote{\textit{Cocoa: Congestion Control Aware Queuing}, Bachl, Fabini, Zseby, 2020}}
-\begin{itemize}
-\item Fair queuing-based qdisc which \textbf{adapts} buffer \textbf{depending on congestion control}
-\item Manages to achieve optimal throughput while keeping \textbf{delay} from buffering \textbf{minimal}
-\item \textbf{Works} for common congestion controls
-\end{itemize}
-\pause
-\begin{alertblock}{Hand-crafted algorithm:}
-Works well for current congestion controls but might fail badly for new congestion controls.
-\end{alertblock}
-\end{frame}
+%\begin{frame}{\texttt{cocoa} qdisc\footnote{\textit{Cocoa: Congestion Control Aware Queuing}, Bachl, Fabini, Zseby, 2020}}
+%\begin{itemize}
+%\item Fair queuing-based qdisc which \textbf{adapts} buffer \textbf{depending on congestion control}
+%\item Manages to achieve optimal throughput while keeping \textbf{delay} from buffering \textbf{minimal}
+%\item \textbf{Works} for common congestion controls
+%\end{itemize}
+%\pause
+%\begin{alertblock}{Hand-crafted algorithm:}
+%Works well for current congestion controls but might fail badly for new congestion controls.
+%\end{alertblock}
+%\end{frame}
 
 \section{Concept}
 
-\begin{frame}{Deep Learning for Buffering}
+\begin{frame}{Deep Reinforcement Learning for Buffering}
 \begin{itemize}
 \item Have a separate queue for each flow in a switch/router (fair queuing)
 \item Define some reward function (like high throughput, low delay)
-\item Use \textbf{Deep Learning}
+\item Use \textbf{Deep Reinforcement Learning}
 \begin{itemize} \item to \textbf{fingerprint} each flow
 \item and to use the \textbf{correct buffer size} for the flow \textbf{based on experience}, which \textbf{maximizes the reward}
 \end{itemize}
+\item We call it \textit{Learning Fair Queuing}
 \end{itemize}
 \end{frame}
 
 \begin{frame}{Reward}
 \begin{align*}
-\textit{Reward} = \textit{bandwidth}-\alpha\times\textit{queue size}
+\textit{Reward} = \textit{throughput}-\alpha\times\textit{queue size}
 \end{align*}
 \end{frame}
 
@@ -141,12 +142,12 @@ Works well for current congestion controls but might fail badly for new congesti
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Input features 2}
-\begin{itemize}
-\item Don't use these features themselves but exponentially weighted moving averages
-\item Advantage: No need to keep data around except for features themselves
-\end{itemize}
-\end{frame}
+%\begin{frame}{Input features 2}
+%\begin{itemize}
+%\item Don't use these features themselves but exponentially weighted moving averages
+%\item Advantage: No need to keep data around except for features themselves
+%\end{itemize}
+%\end{frame}
 
 \begin{frame}{Neural Network}
 \begin{itemize}
@@ -165,7 +166,7 @@ Works well for current congestion controls but might fail badly for new congesti
 \item Pytorch's C++ API for Deep Learning
 \item Integrate Pytorch into ns-3
 \item Develop queuing discipline based on fair queuing
-\item Each flow is managed by Reinforcement Learning based on Deep Learning
+\item Each flow is managed by Deep Reinforcement Learning
 \end{itemize}
 \end{frame}
 
@@ -173,12 +174,12 @@ Works well for current congestion controls but might fail badly for new congesti
 \begin{frame}{Offline Learning}
 \begin{itemize}
 \item Randomly sample bandwidth, delay, congestion control and flow duration
-\item For each flow, at random time, launch experiment
-\item Experiment is A/B testing: 
+\item Simulate each flow continuously using the optimal buffer size output by the Deep Reinforcement Learning
+\item For each flow, at a random time, launch experiment (A/B testing):
 \begin{itemize}
-\item Continue with current buffer size +1 and current buffer size -1 (two different experiment)
-\item Let the neural network learn buffer size that performed better regarding reward
+\item Continue one experiment with current buffer size +1 packet and one with current buffer size -1 packet (two different experiments)
 \end{itemize}
+\item Let the neural network learn which buffer size achieved the higher reward
 \item Train using L1 loss (mean absolute error), using a couple of results together as a batch
 \end{itemize}
 Training takes several hundred thousand flows to converge. 
@@ -186,11 +187,12 @@ Training takes several hundred thousand flows to converge.
 
 \section{Offline Learning, $\alpha=0.01$}
 
-\begin{frame}{Visualizing success}
+\begin{frame}{Measuring success}
 Should learn
 \begin{itemize}
 \item Larger bandwidth $\rightarrow$ larger buffer
 \item Larger delay $\rightarrow$ larger buffer
+\item New Reno Congestion Control should get bigger buffer than BIC
 \end{itemize}
 \end{frame}
 
@@ -201,25 +203,25 @@ Should learn
 %\end{figure}
 %\end{frame}
 
-\begin{frame}{New Reno, varying bandwidth}
-\centering
-\includegraphics[width=0.85\columnwidth]{{"../ns-allinone-3.30.1/ns-3.30.1/results/RLQueueDisc/logs/plots/2020-6-6-10-24-18_81000.weights_New Reno_bandwidth"}.pdf}
-\end{frame}
-
-\begin{frame}{New Reno, varying delay}
-\centering
-\includegraphics[width=0.85\columnwidth]{{"../ns-allinone-3.30.1/ns-3.30.1/results/RLQueueDisc/logs/plots/2020-6-6-10-24-18_81000.weights_New Reno_delay"}.pdf}
-\end{frame}
-
-\begin{frame}{Bic, varying bandwidth}
-\centering
-\includegraphics[width=0.85\columnwidth]{{"../ns-allinone-3.30.1/ns-3.30.1/results/RLQueueDisc/logs/plots/2020-6-6-10-24-18_81000.weights_Bic_bandwidth"}.pdf}
-\end{frame}
-
-\begin{frame}{Bic, varying delay}
-\centering
-\includegraphics[width=0.9\columnwidth]{{"../ns-allinone-3.30.1/ns-3.30.1/results/RLQueueDisc/logs/plots/2020-6-6-10-24-18_81000.weights_Bic_delay"}.pdf}
-\end{frame}
+%\begin{frame}{New Reno, varying bandwidth}
+%\centering
+%\includegraphics[width=0.85\columnwidth]{{"../ns-allinone-3.30.1/ns-3.30.1/results/RLQueueDisc/logs/plots/2020-6-6-10-24-18_81000.weights_New Reno_bandwidth"}.pdf}
+%\end{frame}
+%
+%\begin{frame}{New Reno, varying delay}
+%\centering
+%\includegraphics[width=0.85\columnwidth]{{"../ns-allinone-3.30.1/ns-3.30.1/results/RLQueueDisc/logs/plots/2020-6-6-10-24-18_81000.weights_New Reno_delay"}.pdf}
+%\end{frame}
+%
+%\begin{frame}{Bic, varying bandwidth}
+%\centering
+%\includegraphics[width=0.85\columnwidth]{{"../ns-allinone-3.30.1/ns-3.30.1/results/RLQueueDisc/logs/plots/2020-6-6-10-24-18_81000.weights_Bic_bandwidth"}.pdf}
+%\end{frame}
+%
+%\begin{frame}{Bic, varying delay}
+%\centering
+%\includegraphics[width=0.9\columnwidth]{{"../ns-allinone-3.30.1/ns-3.30.1/results/RLQueueDisc/logs/plots/2020-6-6-10-24-18_81000.weights_Bic_delay"}.pdf}
+%\end{frame}
 
 \begin{frame}{Correlations}
 Correlations calculated of each of the above plots:\\ 
@@ -277,18 +279,18 @@ BIC & 8 \\
 
 \section{Offline Learning, $\alpha=10$}
 
-\begin{frame}{Correlations}
-\begin{table}[h]
-\caption{Correlation between bandwidth/delay of the link and output buffer size.} \label{tab:corrOfflineSmallAlpha}
-\centering
-\begin{tabular}{lrr} \toprule
-Congestion control & bandwidth & delay \\ \midrule
-New Reno & 99.3\% & 96.5\% \\
-BIC & 75.4\% & 62\% \\
-\bottomrule
-\end{tabular}
-\end{table}
-\end{frame}
+%\begin{frame}{Correlations}
+%\begin{table}[h]
+%\caption{Correlation between bandwidth/delay of the link and output buffer size.} \label{tab:corrOfflineSmallAlpha}
+%\centering
+%\begin{tabular}{lrr} \toprule
+%Congestion control & bandwidth & delay \\ \midrule
+%New Reno & 99.3\% & 96.5\% \\
+%BIC & 75.4\% & 62\% \\
+%\bottomrule
+%\end{tabular}
+%\end{table}
+%\end{frame}
 
 \begin{frame}{Average queue sizes}
 \begin{table}[h]
@@ -412,7 +414,7 @@ fq 1000	& 11.9 & 1000 & 630.4 \\
 \item It learns to optimize a reward function
 \item It achieves high throughput and low delay when compared to competing solutions
 \item It has low computational overhead
-\item We envision deployment close to end users (on switches, routers)
+\item We envision deployment close to end users (for example on home routers)
 \end{itemize}
 \end{frame}
 
