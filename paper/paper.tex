@@ -403,7 +403,7 @@ One major issue that we had during the implementation of \gls{ours} was that we 
 
 Last, the choice of the \gls{dl} toolkit is important. We started with tensorflow's C++ API but found it very difficult to make it work together with ns-3 due to tensorflow's unusual build system. On the other side, Pytorch's C++ API was easily linkable to ns-3 and also didn't require to be compiled from scratch, which saved compilation time. 
 
-\section{Conlusion}
+\section{Conclusion}
 
 The results show that \gls{ours} learns the optimal buffering behavior taking into account the tradeoff parameter $\alpha$. This allows to tune how much throughput is allowed to be sacrificed for a reduction of average queue size. The online learning worked comparable to the offline learning, however, the online learning can take significantly longer to converge. This is no surprise as for offline learning we can do A/B testing between buffer sizing and thus always know what the optimal buffer size is. On the other side, for online learning, the learning depends on the output of a second neural network (the critic). This adds additional noise to the learning process. A way to alleviate this could be to pre-train a model using offline learning and then refine this pretrained model with online learning in a live deployment. 
 
