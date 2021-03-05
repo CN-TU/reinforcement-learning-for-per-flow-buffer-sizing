@@ -132,7 +132,7 @@ During simulating each flow, at a certain point, we perform an experiment to let
 
 For the simulations we use two hosts that are directly connected to each other. We also experimented initially with a switch connecting these hosts but this made the simulation significantly slower. Thus we made the simulation as simple as possible and implemented our \gls{aqm} in front of the bottleneck link that connects the sender to the receiver. For all other buffers we use a FIFO queue with a buffer of 100 packets (the default). 
 
-For the \gls{dl}, we used a fully connected neural network consisting of an input layer, three layers of 256 neurons which each have the leaky ReLU \cite{noauthor_rectifier_2020} function applied and finally an output layer which has an output size of 1. All neural networks we use have this architecture. We chose this number of neurons and layers as recent research shows that generally, overfitting is not a problem, if a neural network is trained long enough \cite{nakkiran_deep_2019}. Thus, it is generally not bad to have more neurons and layers than necessary. That's why we opted for 256 neurons and 3 layers, which we think is quite generous considering that there are only 60 input features and one output. For the learning we chose gradient descent with a learning rate of $0.01$. To save computational resources, how often our \gls{dl} logic runs and outputs the optimal buffer size, is a configurable parameter. The most fine-grained would be to let the \gls{dl} run for each packet that is received. However, this would be a computational waste and thus, by default, we only let the \gls{dl} run for every 10th packet. Other sampling intervals can be configured. Also, an option would be to not let the \gls{dl} run every $n$th packet but every $x$ milliseconds. 
+For the \gls{dl}, we used a fully connected neural network consisting of an input layer, three layers of 256 neurons which each have the leaky ReLU \cite{noauthor_rectifier_2020} activation function applied and finally an output layer which has an output size of 1. All neural networks we use have this architecture. We chose this number of neurons and layers as recent research shows that generally, overfitting is not a problem, if a neural network is trained long enough \cite{nakkiran_deep_2019}. Thus, it is generally not bad to have more neurons and layers than necessary. That's why we opted for 256 neurons and 3 layers, which we think is quite generous considering that there are only 60 input features and one output. For the learning we chose gradient descent with a learning rate of $0.01$. To save computational resources, how often our \gls{dl} logic runs and outputs the optimal buffer size, is a configurable parameter. The most fine-grained would be to let the \gls{dl} run for each packet that is received. However, this would be a computational waste and thus, by default, we only let the \gls{dl} run for every 10th packet. Other sampling intervals can be configured. Also, an option would be to not let the \gls{dl} run every $n$th packet but every $x$ milliseconds. 
 
 \section{Offline Learning}
 
@@ -149,7 +149,7 @@ The training procedure involves the following steps:
 \item Start the next iteration. 
 \end{enumerate}
 
-During deployment, the trained neural network is used but the experiment step is skipped. We chose to run 20 simulations concurrently since our computers have 40 CPUs and every simulation is split in two at the time of the experiment when each simulation process is forked. Thus with 20 simulations we fully utilize the 20 CPUs. This implies that the batch size used for the \gls{dl} is 20. 
+During deployment, the trained neural network is used but the experiment step is skipped. We chose to run 20 simulations concurrently since our computers have 40 CPUs and every simulation is split in two at the time of the experiment when each simulation process is forked. Thus with 20 simulations we fully utilize the 40 CPUs. This implies that the batch size used for the \gls{dl} is 20. 
 
 \subsection{$\alpha=0.01$}
 
@@ -180,10 +180,10 @@ When performing offline learning with the tradeoff parameter $\alpha=0.01$ (\aut
 \begin{figure}[h]
 \includegraphics[width=\columnwidth]{{"figures/local_ns-allinone-3.30.1_ns-3.30.1_results_RLQueueDisc_queueTraces_2020-6-6-10-24-18_81000.weights_cc_1_bw_25.000000_delay_15.000000"}.pdf}
 \caption{Showing the maximum queue length and queue length of a BIC flow controlled by \gls{ours} (offline training, $\alpha=0.01$) at the bottleneck with a 25\,Mbit/s link and a delay of 15\,ms. The queue never becomes empty and also never forms a standing queue.}
-\label{fig:exampleBicLargeBw}
+\label{fig:exampleBICLargeBw}
 \end{figure}
 
-\autoref{fig:exampleBicLargeBw} shows that \gls{ours} learned that the flow uses the BIC \gls{cca} and thus needs a smaller buffer: For the same scenario with New Reno (\autoref{fig:exampleRenoLargeBw}) \gls{ours} output a queue length of around 35. For the same scenario with a BIC controlled flow, it chooses the optimal maximum queue length as around 12 packets. This demonstrates that \gls{ours} learned to distinguish different congestion controls only by looking at the pattern of a flow. 
+\autoref{fig:exampleBICLargeBw} shows that \gls{ours} learned that the flow uses the BIC \gls{cca} and thus needs a smaller buffer: For the same scenario with New Reno (\autoref{fig:exampleRenoLargeBw}) \gls{ours} output a queue length of around 35. For the same scenario with a BIC controlled flow, it chooses the optimal maximum queue length as around 12 packets. This demonstrates that \gls{ours} learned to distinguish different congestion controls only by looking at the pattern of a flow. 
 
 \begin{table}[h]
 \caption{Correlation between bandwidth/delay of the link and output buffer size for a tradeoff of $0.1$ with offline learning. We vary bandwidth between 5 and 25\,Mbit/s and delay between 5 and 25\,ms for both \glspl{cca}. When bandwidth is varied, delay is kept at its mean (15\,ms) and vice versa.} \label{tab:corrOfflineSmallAlpha}
@@ -225,13 +225,13 @@ BIC & 8 \\
 ]{
 \includegraphics[width=0.98\columnwidth]{{"figures/local_ns-allinone-3.30.1_ns-3.30.1_results_RLQueueDisc_logs_plots_2020-6-6-10-24-18_81000.weights_New_Reno_delay"}.pdf}
 }{}
-\subfloat[BIC, varying bandwidth\label{fig:SmallAlphaBicBandwidth}
+\subfloat[BIC, varying bandwidth\label{fig:SmallAlphaBICBandwidth}
 ]{
-\includegraphics[width=0.98\columnwidth]{{"figures/local_ns-allinone-3.30.1_ns-3.30.1_results_RLQueueDisc_logs_plots_2020-6-6-10-24-18_81000.weights_Bic_bandwidth"}.pdf}
+\includegraphics[width=0.98\columnwidth]{{"figures/local_ns-allinone-3.30.1_ns-3.30.1_results_RLQueueDisc_logs_plots_2020-6-6-10-24-18_81000.weights_BIC_bandwidth"}.pdf}
 }{}
-\subfloat[BIC, varying delay\label{fig:SmallAlphaBicDelay}
+\subfloat[BIC, varying delay\label{fig:SmallAlphaBICDelay}
 ]{
-\includegraphics[width=0.98\columnwidth]{{"figures/local_ns-allinone-3.30.1_ns-3.30.1_results_RLQueueDisc_logs_plots_2020-6-6-10-24-18_81000.weights_Bic_delay"}.pdf}
+\includegraphics[width=0.98\columnwidth]{{"figures/local_ns-allinone-3.30.1_ns-3.30.1_results_RLQueueDisc_logs_plots_2020-6-6-10-24-18_81000.weights_BIC_delay"}.pdf}
 }{}
 \caption{Change of the buffer size after offline learning when varying bandwidth/delay/\gls{cca}. When bandwidth is varied, delay is kept in the middle of its range, at 15\,ms. Vice versa, when delay is varied, bandwidth is kept in the middle of its range, at 15\,Mbit/s.}
 \label{fig:offlineSmallAlpha}
@@ -283,9 +283,9 @@ Results in \autoref{tab:corrOfflineLargeAlpha} and \autoref{tab:corrOfflineLarge
 
 \section{Online Learning}
 
-In contrast to offline learning, online learning enables to train in deployment. This makes it possible to adapt the behavior slowly over time (over a time span of months or years), for example if new \glspl{cca} emerge. Furthermore, being able to training with real flows is more realistic than training only with simulated flows in a simulation. 
+In contrast to offline learning, online learning enables to train in deployment. This makes it possible to adapt the behavior slowly over time (over a time span of months or years), for example if new \glspl{cca} emerge. Furthermore, being able to do training with real flows is more realistic than training only with simulated flows in a simulation. 
 
-The major change is that for online learning, A/B testing, like for the offline learning, is not possible: In the real world, each time the buffer size is updated for a flow, this is a definite decision. It is not possible to artificially ``split'' a flow like in the simulator and check if a larger or a smaller buffer would have been a better choice. Another analogy for this is that for online learning, we have to unveil what happened to Schrödinger's cat (if it is dead or not), when we launch the experiment, which buffer size is better. For the offline learning, on the other side, we can try out both versions in the simulator and continue one reality with the cat being dead (maximum buffer size $-1$) and the other one with the cat being alive (maximum buffer size $+1$). 
+The major change is that for online learning, A/B testing, like for the offline learning, is not possible: In the real world, each time the buffer size is updated for a flow, this is a definite decision. It is not possible to artificially ``split'' a flow like in the simulator and check if a larger or a smaller buffer would have been a better choice. Another analogy for this is that for online learning we have to unveil what happened to Schrödinger's cat (if it is dead or not), when we launch the experiment, which buffer size is better. For the offline learning, on the other side, we can try out both versions in the simulator and continue one reality with the cat being dead (maximum buffer size $-1$) and the other one with the cat being alive (maximum buffer size $+1$). 
 
 To accommodate for this difference from offline learning, for online training we need two neural networks: 
 \begin{itemize}
@@ -352,31 +352,31 @@ In this section we compare the behavior of \gls{ours} to the behavior of other p
 \begin{figure}[h]
 \includegraphics[width=\columnwidth]{{"figures/local_ns-allinone-3.30.1_ns-3.30.1_results_RLQueueDisc_queueTraces_2020-6-6-10-24-18_81000.weights_cc_1_bw_15.000000_delay_5.000000"}.pdf}
 \caption{Showing the maximum queue length and queue length of a BIC flow controlled by \gls{ours} (offline training, $\alpha=0.01$) at the bottleneck with a 15\,Mbit/s link and a delay of 5\,ms. The queue never becomes empty and also never forms a standing queue.}
-\label{fig:exampleBicOursNice}
+\label{fig:exampleBICOursNice}
 \end{figure}
 
 \begin{figure}[h]
 \includegraphics[width=\columnwidth]{{"figures/local_ns-allinone-3.30.1_ns-3.30.1_results_FifoQueueDisc_queueTraces_1000_cc_1_bw_15.000000_delay_5.000000"}.pdf}
-\caption{Showing the maximum queue length and queue length of a Bic flow controlled by fq with a max queue of 1000 packets at the bottleneck with a 15\,Mbit/s link and a delay of 5\,ms.}
-\label{fig:exampleBicfq1000}
+\caption{Showing the maximum queue length and queue length of a BIC flow controlled by fq with a max queue of 1000 packets at the bottleneck with a 15\,Mbit/s link and a delay of 5\,ms.}
+\label{fig:exampleBICfq1000}
 \end{figure}
 
 \begin{figure}[h]
 \includegraphics[width=\columnwidth]{{"figures/local_ns-allinone-3.30.1_ns-3.30.1_results_FifoQueueDisc_queueTraces_100_cc_1_bw_15.000000_delay_5.000000"}.pdf}
-\caption{Showing the maximum queue length and queue length of a Bic flow controlled by fq with a max queue of 1000 packets at the bottleneck with a 15\,Mbit/s link and a delay of 5\,ms. A large standing queue of about 80 packets is kept starting from second 2.}
-\label{fig:exampleBicfq100}
+\caption{Showing the maximum queue length and queue length of a BIC flow controlled by fq with a max queue of 1000 packets at the bottleneck with a 15\,Mbit/s link and a delay of 5\,ms. A large standing queue of about 80 packets is kept starting from second 2.}
+\label{fig:exampleBICfq100}
 \end{figure}
 
 \begin{figure}[h]
 \includegraphics[width=\columnwidth]{{"figures/local_ns-allinone-3.30.1_ns-3.30.1_results_FqCoDelQueueDisc_queueTraces_normal_cc_1_bw_15.000000_delay_5.000000"}.pdf}
-\caption{Showing the maximum queue length and queue length of a Bic flow controlled by FqCoDel at the bottleneck with a 15\,Mbit/s link and a delay of 5\,ms.}
-\label{fig:exampleBicFqCoDel}
+\caption{Showing the maximum queue length and queue length of a BIC flow controlled by FqCoDel at the bottleneck with a 15\,Mbit/s link and a delay of 5\,ms.}
+\label{fig:exampleBICFqCoDel}
 \end{figure}
 
-Comparing the behavior of \gls{ours} (\autoref{fig:exampleBicOursNice}) with the behavior of fq (\autoref{fig:exampleBicfq1000} and \autoref{fig:exampleBicfq100}) for an example flow shows that while fq keeps a very large standing queue, \gls{ours} keeps the queue at the minimum so that it is possible to achieve maximum throughput and minimum queue size according to our reward function (\autoref{eq:reward}). The comparison with FqCoDel (\autoref{fig:exampleBicFqCoDel}) shows that FqCoDel generally avoids a large standing queue but results in a very large spike in queued packets at the beginning of the flow. Thus, while CoDel was designed to avoid ``bufferbloat'' it actually induces a very large standing queue during the slow start phase of a flow. 
+Comparing the behavior of \gls{ours} (\autoref{fig:exampleBICOursNice}) with the behavior of fq (\autoref{fig:exampleBICfq1000} and \autoref{fig:exampleBICfq100}) for an example flow shows that while fq keeps a very large standing queue, \gls{ours} keeps the queue at the minimum so that it is possible to achieve maximum throughput and minimum queue size according to our reward function (\autoref{eq:reward}). The comparison with FqCoDel (\autoref{fig:exampleBICFqCoDel}) shows that FqCoDel generally avoids a large standing queue but results in a very large spike in queued packets at the beginning of the flow. Thus, while CoDel was designed to avoid ``bufferbloat'' it actually induces a very large standing queue during the slow start phase of a flow. 
 
 \begin{table}
-\caption{Comparing the average throughput and maximum/average queue size over a large range of network conditions for New Reno and Bic. All results are the average of 100 experiments with delay ranging from 5 to 25\,ms (with bandwidth fixed at 15\,Mbit/s and of 100 experiments with bandwidth ranging from 5 to 25\,Mbit/s (with bandwidth fixed at 15\,ms). All experiments were conducted for both the New Reno and Bic \glspl{cca}. This gives a total of 400 experiments, over which the values are averaged.} \label{tab:comparison_others}
+\caption{Comparing the average throughput and maximum/average queue size over a large range of network conditions for New Reno and BIC. All results are the average of 100 experiments with delay ranging from 5 to 25\,ms (with bandwidth fixed at 15\,Mbit/s and of 100 experiments with bandwidth ranging from 5 to 25\,Mbit/s (with bandwidth fixed at 15\,ms). All experiments were conducted for both the New Reno and BIC \glspl{cca}. This gives a total of 400 experiments, over which the values are averaged.} \label{tab:comparison_others}
 \centering
 \begin{tabular}{l r r r} \toprule
 & \multirow{2}{*}{avg. throughp.} & \multicolumn{2}{c}{queue size} \\
