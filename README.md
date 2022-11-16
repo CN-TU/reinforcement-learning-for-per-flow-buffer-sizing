@@ -1,7 +1,7 @@
 # reinforcement-learning-for-per-flow-buffer-sizing
 Contact: Maximilian Bachl
 
-This repository contains the code for the upcoming paper [LFQ: Online Learning of Per-flow Queuing Policies using Deep Reinforcement Learning](https://arxiv.org/abs/2007.02735).
+This repository contains the code for the paper [LFQ: Online Learning of Per-flow Queuing Policies using Deep Reinforcement Learning](https://arxiv.org/abs/2007.02735).
 
 The code was run on *Debian 10 (buster)* on Linux kernel ```4.19.0-9-amd64``` with g++ ```8.3.0```. 
 
