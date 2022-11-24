@@ -32,6 +32,7 @@ The code was run on *Debian 10 (buster)* on Linux kernel ```4.19.0-9-amd64``` wi
 * `docker build -f Dockerfile . -t rl_image`
 * `docker run -v $(realpath -s ..):/repo -w /repo/ns-allinone-3.30.1/ns-3.30.1/ --entrypoint bash rl_image run_all.sh`
 * `docker run -v $(realpath -s ..):/repo -w /repo/ns-allinone-3.30.1/ns-3.30.1/ --entrypoint bash -it rl_image`
+* Now you're in the Docker image and all commands below for training or evaluating should work as usual. 
 
 # Training an RL model
 
