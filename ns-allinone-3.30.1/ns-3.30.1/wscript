@@ -354,7 +354,7 @@ def configure(conf):
     # print("frontpath", frontpath)
     conf.env.append_value('INCLUDES', [frontpath+"libtorch/include", frontpath+"libtorch/include/torch/csrc/api/include"])
     conf.env.append_value('LINKFLAGS', ["-L"+frontpath+"libtorch/lib", "-ltorch", "-ltorch_cpu", "-lc10"])
-    conf.env.append_value('CXXFLAGS', '-D_GLIBCXX_USE_CXX11_ABI=0')
+    conf.env.append_value('CXXFLAGS', ['-D_GLIBCXX_USE_CXX11_ABI=0', '-fPIC'])
 
     conf.load('relocation', tooldir=['waf-tools'])
 
