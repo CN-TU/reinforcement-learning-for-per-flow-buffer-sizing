@@ -5,7 +5,7 @@ This repository contains the code for the paper [LFQ: Online Learning of Per-flo
 
 The code was run on *Debian 10 (buster)* on Linux kernel ```4.19.0-9-amd64``` with g++ ```8.3.0```. 
 
-# Installation
+# Native installation (not recommended, [Docker installation is easier](#docker-installation))
 
 ## Downloading libtorch
 
@@ -18,6 +18,20 @@ The code was run on *Debian 10 (buster)* on Linux kernel ```4.19.0-9-amd64``` wi
 * ```./waf clean```
 * ```./waf configure```
 * ```./waf build```
+
+# Docker installation
+
+## Downloading libtorch (same as for the native installation)
+
+* Download the [C++ version of libtorch for CPUs](https://download.pytorch.org/libtorch/cpu/libtorch-shared-with-deps-1.5.1%2Bcpu.zip). If you want to download a newer version, make sure that it is the *Pre-cxx11 ABI* version. Otherwise you'll have to change some flags in the build process. 
+* Unpack it and move the contained directory ```libtorch``` to the root directory of this repository (the same directory in which there's the ```ns-allinone-3.30.1``` directory)
+
+## Use docker to run it
+
+* `cd docker`
+* `docker build -f Dockerfile . -t rl_image`
+* `docker run -v $(realpath -s ..):/repo -w /repo/ns-allinone-3.30.1/ns-3.30.1/ --entrypoint bash rl_image run_all.sh`
+* `docker run -v $(realpath -s ..):/repo -w /repo/ns-allinone-3.30.1/ns-3.30.1/ --entrypoint bash -it rl_image`
 
 # Training an RL model
 
